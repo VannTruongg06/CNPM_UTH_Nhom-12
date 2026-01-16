@@ -1,0 +1,108 @@
+.login-container {
+  background-color: #6b0307;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+
+/* --- BODY --- */
+.login-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  width: 100%;
+}
+
+/* Phần Logo lớn và Slogan */
+.brand-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.slogan {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- FORM --- */
+.login-form {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-left: 10px;
+}
+
+.input-group input {
+  background-color: #d9d9d9;
+  border: none;
+  border-radius: 25px;
+  padding: 15px 20px;
+  font-size: 14px;
+  outline: none;
+  color: #333;
+}
+
+.input-group input::placeholder {
+  color: #555;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.btn-login {
+  background-color: #2c5270;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 15px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background 0.3s;
+  width: 50%;
+  align-self: center;
+}
+
+.btn-login:hover {
+  background-color: #3a6b8f;
+}
+
+/* --- RESPONSIVE --- */
+/* Điều chỉnh cho màn hình lớn (PC/Tablet ngang) */
+@media (min-width: 768px) {
+  .login-body {
+    justify-content: center; /* Đảm bảo căn giữa màn hình */
+  }
+
+  .main-logo {
+    width: 380px; /* Logo to hơn trên màn hình lớn */
+  }
+
+  .slogan {
+    font-size: 16px;
+  }
+
+  .login-form {
+    max-width: 450px;
+  }
+}
