@@ -1,0 +1,134 @@
+.booking-container {
+  background-color: #6b0307;
+  min-height: 100vh;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.booking-header {
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #8b2a2a;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.logo-img-large {
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
+}
+.logo-img-small {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.flags {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.flag-img {
+  width: 70px;
+  height: 50px;
+}
+
+.intro-text {
+  font-size: 1.6rem;
+  line-height: 1.6;
+  margin-bottom: 40px;
+  padding: 0 40px;
+  color: #e0e0e0;
+}
+
+.contact-info {
+  display: flex;
+  gap: 80px;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.facebook-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.facebook-link,
+.phone-link {
+  text-decoration: none;
+  color: inherit;
+}
+.booking-form {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 25px;   border: none;
+  background-color: #dcdcdc;
+  font-size: 14px;
+  color: #333;
+  box-sizing: border-box;
+  outline: none;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: #3b5c7f; 
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  margin-top: 10px;
+  width: fit-content;
+  align-self: center;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}

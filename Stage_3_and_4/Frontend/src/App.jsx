@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import ClientBooking from "./pages/Visitor/ClientBooking.jsx";
 import Login from "./pages/Auth/login.jsx";
 
 function App() {
@@ -6,7 +7,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         {/* 1. Trang chủ (Khách online) */}
-
+        <Route path="/" element={<ClientBooking />} />
         {/* 2. Trang Order (Khách tại quán) */}
 
         {/* 3. Trang Login */}
