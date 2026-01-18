@@ -1,0 +1,122 @@
+﻿.cartFooter {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 50px 70px;
+  box-sizing: border-box;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.cartFooter__action-btn {
+  pointer-events: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: none;
+  font-size: 1.8rem;
+  font-weight: bold;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s, background-color 0.2s;
+  width: 100%;
+  max-width: 350px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cartFooter__action-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.cartFooter__action-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Nút Gửi thực đơn - Màu Xanh Dương */
+.btn-send-order {
+  color: #ffff;
+  background-color: #325877;
+}
+.btn-send-order:hover {
+  background-color: #5e93be;
+}
+
+.btn-request-payment {
+  background-color: #d32f2f;
+  color: white;
+}
+.btn-request-payment:hover {
+  background-color: #c62828;
+}
+
+/* --- Các class cũ giữ lại phòng khi cần hoặc Modal --- */
+
+/* Modal Overlay (Phần chọn bàn) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.table-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 bàn 1 hàng */
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.table-btn {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.table-btn.available {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.table-btn.occupied,
+.table-btn.reserved {
+  background-color: #ffebee;
+  color: #c62828;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-close {
+  width: 100%;
+  padding: 12px;
+  background-color: #ddd;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+}

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ClientBooking from "./pages/Visitor/ClientBooking.jsx";
 import Login from "./pages/Auth/login.jsx";
+import StaffHome from "./pages/Staff/StaffHome.jsx";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         {/* 4. Trang dành cho Quản lý (Admin) */}
 
         {/* 5. Trang dành cho Nhân viên */}
+        <Route path="/staff/order-taking" element={<StaffHome />} />
       </Routes>
     </BrowserRouter>
   );
