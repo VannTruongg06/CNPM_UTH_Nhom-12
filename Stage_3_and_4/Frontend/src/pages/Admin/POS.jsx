@@ -1,0 +1,398 @@
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import "./POS.css";
+import { fetchMenuData } from "../../services/menuService";
+import {
+  submitOrder,
+  getOrderDetails,
+  checkoutTable,
+  cancelOrder,
+} from "../../services/orderService";
+import { fetchTables } from "../../services/tableService";
+import {
+  PRODUCTS as MOCK_PRODUCTS,
+  CATEGORIES as MOCK_CATEGORIES,
+} from "../../Data.js";
+
+import BillSection from "../../Components/Admin/POS/BillSection";
+import TableGrid from "../../Components/Admin/POS/TableGrid";
+import MenuGrid from "../../Components/Admin/POS/MenuGrid";
+import PaymentPanel from "../../Components/Admin/POS/PaymentPanel";
+import PrintableBill from "../../Components/Admin/POS/PrintableBill";
+
+const POS = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const role = localStorage.getItem("role");
+  const [activeTab, setActiveTab] = useState("table");
+  const [products, setProducts] = useState(MOCK_PRODUCTS || []);
+  const [categories, setCategories] = useState(MOCK_CATEGORIES || ["Tất cả"]);
+  const [selectedCategory, setSelectedCategory] = useState("Tất cả");
+
+  const [cart, setCart] = useState([]);
+  const [notes, setNotes] = useState({});
+  const [orderedItems, setOrderedItems] = useState([]);
+
+  const [selectedTable, setSelectedTable] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [tables, setTables] = useState([]);
+
+  const [discount, setDiscount] = useState(0);
+  const [surcharge, setSurcharge] = useState(0);
+  const [customerPaid, setCustomerPaid] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState("Tiền mặt");
+
+  const loadTablesData = async () => {
+    try {
+      const tableData = await fetchTables();
+      const tableList = Array.isArray(tableData)
+        ? tableData
+        : tableData.results || [];
+      if (tableList.length > 0) setTables(tableList);
+      return tableList;
+    } catch (e) {
+      console.error("Failed to fetch tables", e);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        try {
+          const menuData = await fetchMenuData();
+          if (menuData?.products) {
+            setProducts(menuData.products);
+            if (menuData.categories)
+              setCategories(["Tất cả", ...menuData.categories]);
+          }
+        } catch (e) {
+          console.warn("Menu load failed, using mock");
+        }
+
+        const currentTables = await loadTablesData();
+
+        const tableIdParam = searchParams.get("tableId");
+        if (tableIdParam && currentTables.length > 0) {
+          const targetTable = currentTables.find(
+            (t) => String(t.id) === String(tableIdParam),
+          );
+          if (targetTable) {
+            handleTableClick(targetTable);
+            setSearchParams({}, { replace: true });
+          }
+        }
+      } catch (err) {
+        setTables(
+          Array.from({ length: 24 }, (_, i) => ({
+            id: i + 1,
+            number: `Bàn ${i + 1}`,
+            status: i === 0 ? "occupied" : i === 4 ? "reserved" : "available",
+            duration: i === 0 ? "1h 30p" : "",
+            current_order_total: i === 0 ? 640000 : 0,
+          })),
+        );
+      }
+    };
+
+    loadInitialData();
+    const intervalId = setInterval(loadTablesData, 5000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const getTableStatusClass = (status) => {
+    switch (status) {
+      case "occupied":
+        return "active";
+      case "reserved":
+        return "reserved";
+      default:
+        return "empty";
+    }
+  };
+
+  const filteredProducts = products.filter((p) => {
+    if (selectedCategory === "Tất cả") return true;
+    return (p.category || p.phan_loai) === selectedCategory;
+  });
+
+  const loadCurrentOrder = async (tableId) => {
+    try {
+      const orderData = await getOrderDetails(tableId);
+      setOrderedItems(orderData?.items || []);
+    } catch (error) {
+      setOrderedItems([]);
+    }
+  };
+
+  const handleTableClick = async (table) => {
+    setSelectedTable(table.id);
+    setCart([]);
+    setOrderedItems([]);
+    setNotes({});
+    setActiveTab("menu");
+
+    if (table.status === "occupied") {
+      setLoading(true);
+      await loadCurrentOrder(table.id);
+      setLoading(false);
+    }
+  };
+
+  const updateCardQty = (product, amount) => {
+    const existItem = cart.find((x) => x.id === product.id);
+    if (existItem) {
+      const newQty = existItem.qty + amount;
+      if (newQty <= 0) setCart(cart.filter((x) => x.id !== product.id));
+      else
+        setCart(
+          cart.map((x) => (x.id === product.id ? { ...x, qty: newQty } : x)),
+        );
+    } else if (amount > 0) {
+      setCart([
+        ...cart,
+        { ...product, qty: 1, image: product.image || product.img },
+      ]);
+    }
+  };
+
+  const removeItem = (id) => setCart(cart.filter((x) => x.id !== id));
+
+  const calculateTotal = () => {
+    const totalNew = cart.reduce(
+      (acc, item) => acc + (item.price || 0) * item.qty,
+      0,
+    );
+    const totalOrdered = orderedItems.reduce(
+      (acc, item) => acc + (item.price || 0) * (item.quantity || 0),
+      0,
+    );
+    return totalNew + totalOrdered;
+  };
+
+  const finalTotal = () => {
+    const subTotal = calculateTotal();
+    return subTotal - subTotal * (discount / 100) + surcharge;
+  };
+
+  const handleSendOrder = async () => {
+    if (!selectedTable || cart.length === 0) return;
+    setLoading(true);
+    try {
+      await submitOrder({
+        tableId: selectedTable,
+        items: cart.map((i) => ({
+          itemId: i.id,
+          quantity: i.qty,
+          note: notes[i.id] || "",
+        })),
+      });
+      await loadCurrentOrder(selectedTable);
+      setCart([]);
+      await loadTablesData();
+      alert("Gửi thực đơn thành công!");
+    } catch (e) {
+      setOrderedItems([
+        ...orderedItems,
+        ...cart.map((i) => ({ ...i, quantity: i.qty, note: notes[i.id] })),
+      ]);
+      setCart([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    if (!selectedTable) return;
+
+    if (orderedItems.length > 0) {
+      if (role?.toUpperCase() !== "ADMIN") {
+        alert("Chỉ quản trị viên mới được hủy đơn đã đặt!");
+        return;
+      }
+      if (
+        !window.confirm(
+          "Bạn có chắc chắn muốn hủy toàn bộ đơn của bàn này? Hành động này không thể hoàn tác.",
+        )
+      ) {
+        return;
+      }
+
+      setLoading(true);
+      try {
+        await cancelOrder(selectedTable);
+        alert("Đã hủy đơn thành công!");
+        // Reset everything
+        setCart([]);
+        setOrderedItems([]);
+        setDiscount(0);
+        setSurcharge(0);
+        setActiveTab("table");
+        setSelectedTable(null);
+        await loadTablesData();
+      } catch (e) {
+        alert(e.message || "Hủy đơn thất bại!");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // Just clear local cart
+      setCart([]);
+      setSelectedTable(null);
+      setActiveTab("table");
+    }
+  };
+
+  const handleMainPaymentButton = () => {
+    if (!selectedTable) {
+      alert("Vui lòng chọn bàn trước!");
+      return;
+    }
+    if (activeTab !== "payment") {
+      setActiveTab("payment");
+      setCustomerPaid(finalTotal());
+    } else {
+      handleFinalPayment();
+    }
+  };
+
+  const handleFinalPayment = async () => {
+    if (role?.toUpperCase() !== "ADMIN") {
+      alert("Chỉ quản trị viên mới có quyền thanh toán!");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const methodMap = {
+        "Tiền mặt": "cash",
+        "Chuyển khoản": "transfer",
+        Thẻ: "card",
+      };
+
+      await checkoutTable(selectedTable, methodMap[paymentMethod] || "cash");
+
+      window.print();
+      setCart([]);
+      setOrderedItems([]);
+      setDiscount(0);
+      setSurcharge(0);
+      setActiveTab("table");
+      setSelectedTable(null);
+      await loadTablesData();
+      alert("Thanh toán thành công!");
+    } catch (e) {
+      alert(e.message || "Thanh toán thất bại!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const allItemsToPrint = [
+    ...orderedItems.map((i) => ({
+      ...i,
+      name: i.name,
+      price: i.price,
+      qty: i.quantity,
+      total: i.price * i.quantity,
+    })),
+    ...cart.map((i) => ({
+      ...i,
+      name: i.name,
+      price: i.price,
+      qty: i.qty,
+      total: i.price * i.qty,
+    })),
+  ];
+
+  return (
+    <>
+      <div className="pos-layout">
+        <BillSection
+          cart={cart}
+          orderedItems={orderedItems}
+          removeItem={removeItem}
+          notes={notes}
+          calculateTotal={calculateTotal}
+          handleSendOrder={handleSendOrder}
+          handleMainPaymentButton={handleMainPaymentButton}
+          handleCancelOrder={handleCancelOrder}
+          activeTab={activeTab}
+          loading={loading}
+          setSelectedTable={setSelectedTable}
+          setCart={setCart}
+          setActiveTab={setActiveTab}
+        />
+
+        <div className="pos-selection-section">
+          <div className="pos-tabs">
+            <button
+              className={`pos-tab-btn ${activeTab === "table" ? "active" : ""}`}
+              onClick={() => setActiveTab("table")}
+            >
+              Chọn bàn
+            </button>
+            <button
+              className={`pos-tab-btn ${activeTab === "menu" ? "active" : ""}`}
+              onClick={() => setActiveTab("menu")}
+            >
+              Thực đơn
+            </button>
+          </div>
+
+          <div className="pos-content-area">
+            {activeTab === "table" && (
+              <TableGrid
+                tables={tables}
+                selectedTable={selectedTable}
+                onTableClick={handleTableClick}
+                getTableStatusClass={getTableStatusClass}
+              />
+            )}
+
+            {activeTab === "menu" && (
+              <MenuGrid
+                categories={categories}
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                filteredProducts={filteredProducts}
+                cart={cart}
+                updateCardQty={updateCardQty}
+                notes={notes}
+                setNotes={setNotes}
+              />
+            )}
+
+            {activeTab === "payment" && (
+              <PaymentPanel
+                selectedTable={selectedTable}
+                calculateTotal={calculateTotal}
+                discount={discount}
+                setDiscount={setDiscount}
+                surcharge={surcharge}
+                setSurcharge={setSurcharge}
+                finalTotal={finalTotal}
+                customerPaid={customerPaid}
+                setCustomerPaid={setCustomerPaid}
+                paymentMethod={paymentMethod}
+                setPaymentMethod={setPaymentMethod}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
+      <PrintableBill
+        selectedTable={selectedTable}
+        allItemsToPrint={allItemsToPrint}
+        calculateTotal={calculateTotal}
+        discount={discount}
+        surcharge={surcharge}
+        finalTotal={finalTotal}
+        customerPaid={customerPaid}
+      />
+    </>
+  );
+};
+
+export default POS;

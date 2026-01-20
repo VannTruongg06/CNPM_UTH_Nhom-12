@@ -1,0 +1,196 @@
+﻿/* Container chính của Dashboard */
+.dashboard-wrapper {
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
+}
+
+.dashboard-top-bar {
+  background-color: #812f2f;
+  padding: 20px 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-radius: 2px;
+}
+
+.page-title {
+  color: white;
+  font-size: 24px;
+  margin: 0;
+  font-weight: 700;
+}
+
+.date-select {
+  padding: 8px 15px;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: none;
+  background: #eee;
+  cursor: pointer;
+}
+
+/* --- 2. Stats Grid --- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  padding: 15px 50px 15px;
+}
+
+.stat-card {
+  background-color: #cbe9f4;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon-box {
+  font-size: 36px;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #000;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #333;
+}
+
+/* --- 3. Content Split --- */
+.content-split {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  padding: 15px 50px 15px;
+}
+
+.panel-section {
+  background-color: white;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ddd;
+}
+
+.panel-header {
+  background-color: #cbe9f4;
+  padding: 15px;
+  text-align: center;
+  font-size: 1.5rem;
+  color: #000;
+  font-weight: 600;
+}
+
+/* Bảng Lịch đặt bàn */
+.booking-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.booking-table th {
+  background-color: #8cb4ef;
+  color: #000;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.booking-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  background-color: #f9f9f9;
+  font-size: 14px;
+}
+
+.btn-delete {
+  background-color: #c0392b;
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* --- Món bán chạy --- */
+.best-seller-list {
+  background-color: white;
+  flex-grow: 1;
+}
+
+.seller-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #dadada;
+  border-bottom: 1px solid #fff;
+}
+
+.seller-rank {
+  padding: 10px;
+  font-weight: bold;
+  font-size: 1.6rem;
+  width: 30px;
+  color: #888;
+}
+
+.seller-img {
+  width: 50px;
+  height: 34px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-right: 10px;
+  background-color: #f0f0f0;
+}
+
+.seller-info {
+  flex: 1;
+}
+
+.seller-name {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.seller-price {
+  font-size: 12px;
+  color: #666;
+}
+
+.seller-stats {
+  text-align: right;
+  min-width: 60px;
+}
+
+.sold-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #ff0000;
+  padding-right: 10px;
+}
+
+.sold-label {
+  font-size: 10px;
+  margin-top: 3px;
+  color: #504f4f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

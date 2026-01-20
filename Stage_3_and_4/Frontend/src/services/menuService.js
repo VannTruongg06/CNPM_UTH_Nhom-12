@@ -1,14 +1,12 @@
 ﻿import { API_BASE_URL, API_ENDPOINTS, USE_MOCK_DATA } from "../config/api.js";
 import { MOCK_PRODUCTS } from "../mockData.js";
 
-// Hàm giả lập delay mạng
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const fetchMenuData = async () => {
   if (USE_MOCK_DATA) {
     console.log("Using Mock Data for Menu");
     await delay(500);
-    // Trả về format mà các component đang kỳ vọng
     return { products: MOCK_PRODUCTS, categories: [] };
   }
 
@@ -32,6 +30,36 @@ export const fetchMenuData = async () => {
   }
 };
 
+export const fetchItems = async () => {
+  if (USE_MOCK_DATA) {
+    console.log("Using Mock Data for Items");
+    await delay(500);
+    return MOCK_PRODUCTS;
+  }
+
+  const url = `${API_BASE_URL}${API_ENDPOINTS.ITEMS}`;
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "ngrok-skip-browser-warning": "true",
+      },
+    });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const data = await response.json();
+
+    if (Array.isArray(data)) return data;
+    if (data.results && Array.isArray(data.results)) return data.results;
+    if (data.products && Array.isArray(data.products)) return data.products;
+
+    return [];
+  } catch (error) {
+    console.error("Error fetching items:", error);
+    return [];
+  }
+};
+
 export const saveProduct = async (product) => {
   if (USE_MOCK_DATA) {
     console.log("Mock Save Product:", product);
@@ -39,21 +67,18 @@ export const saveProduct = async (product) => {
     return { success: true, data: product };
   }
 
-  const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
+  const token =
+    localStorage.getItem("token") || localStorage.getItem("accessToken");
   const isEdit = product.isEdit && product.id;
-  
-  // Use centralized endpoint
+
   const baseUrl = `${API_BASE_URL}${API_ENDPOINTS.ITEMS}`;
-  const url = isEdit
-    ? `${baseUrl}${product.id}/`
-    : baseUrl;
+  const url = isEdit ? `${baseUrl}${product.id}/` : baseUrl;
 
   const method = isEdit ? "PATCH" : "POST";
   const payload = {
     name: product.name,
     price: parseInt(product.price),
-    // Fix: Prioritize 'img' from input, fallback to 'image' if needed
-    img: product.img || product.image, 
+    img: product.img || product.image,
   };
 
   try {
@@ -61,7 +86,7 @@ export const saveProduct = async (product) => {
       method: method,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         "ngrok-skip-browser-warning": "true",
       },
       body: JSON.stringify(payload),
@@ -69,7 +94,9 @@ export const saveProduct = async (product) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+      throw new Error(
+        errorData.detail || `HTTP error! status: ${response.status}`,
+      );
     }
 
     return await response.json();
@@ -85,14 +112,15 @@ export const deleteProduct = async (id) => {
     await delay(300);
     return true;
   }
-  const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
+  const token =
+    localStorage.getItem("token") || localStorage.getItem("accessToken");
   // Use centralized endpoint
   const url = `${API_BASE_URL}${API_ENDPOINTS.ITEMS}${id}/`;
   try {
     const response = await fetch(url, {
       method: "DELETE",
       headers: {
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         "ngrok-skip-browser-warning": "true",
       },
     });

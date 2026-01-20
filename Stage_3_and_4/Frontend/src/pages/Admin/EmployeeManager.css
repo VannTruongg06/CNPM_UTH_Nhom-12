@@ -1,0 +1,168 @@
+/* Container chung */
+.emp-container {
+  width: 100%;
+  min-height: calc(100vh - 70px);
+  background-color: #6d0c0c;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Header Styles --- */
+.emp-header-bar {
+  background-color: #922b2b;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #5a1a1a;
+  border-top: 1px solid #a34e4e;
+}
+
+.emp-title {
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.btn-add-emp {
+  background-color: #8cbceb;
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-add-emp:hover {
+  opacity: 0.9;
+}
+
+/* --- Body Wrapper --- */
+.emp-body-wrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================== STYLE CHO DANH SÁCH (TABLE) ================== */
+.emp-table-wrapper {
+  margin-top: 10px;
+}
+
+.emp-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 5px;
+}
+
+.emp-table thead tr th {
+  background-color: #8cbceb;
+  color: #000;
+  padding: 12px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  border: 1px solid #4f4e4e;
+}
+
+.emp-table tbody tr td {
+  background-color: #e6e6e6;
+  color: #000;
+  padding: 12px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.emp-footer-actions {
+  margin-top: auto;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.btn-action {
+  background-color: #8cbceb;
+  color: #000;
+  border: none;
+  padding: 10px 40px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ================== STYLE CHO FORM THÊM MỚI ================== */
+.add-emp-section {
+  background-color: #c05a5a;
+  flex-grow: 1;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.add-emp-form {
+  width: 100%;
+  max-width: 1000px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px 50px;
+  margin-bottom: 60px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: bold;
+  font-size: 16px;
+  color: #000;
+}
+
+.input-field {
+  padding: 12px 15px;
+  border-radius: 4px;
+  border: none;
+  font-size: 15px;
+  outline: none;
+  background-color: #f8f9fa;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-submit-add {
+  background-color: #8cbceb;
+  color: #000;
+  border: none;
+  padding: 12px 60px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-submit-add:hover {
+  background-color: #7aacdb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
