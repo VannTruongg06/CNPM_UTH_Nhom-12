@@ -3,6 +3,10 @@ import { MOCK_TABLES } from "../mockData.js";
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+/**
+ * Lấy danh sách các bàn và trạng thái.
+ * @returns {Promise<Array>} - Mảng danh sách bàn.
+ */
 export const fetchTables = async () => {
   if (USE_MOCK_DATA) {
     await delay(400);
@@ -16,6 +20,11 @@ export const fetchTables = async () => {
   return response.json();
 };
 
+/**
+ * Lấy thông tin chi tiết một bàn.
+ * @param {string|number} id - ID bàn.
+ * @returns {Promise<Object|null>} - Object bàn hoặc null nếu lỗi.
+ */
 export const getTableById = async (id) => {
   if (USE_MOCK_DATA) {
     await delay(200);

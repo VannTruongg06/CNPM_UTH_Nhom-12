@@ -1,7 +1,20 @@
 import React from "react";
 import "./CartBody.css";
 
-const CartBody = ({ cart, orderedCart = {}, products, updateCart, notes }) => {
+/**
+ * Hiển thị nội dung giỏ hàng của khách hàng.
+ * Phân tách rõ món đang chọn và món đã gửi bếp thành công.
+ */
+const CartBody = ({ 
+  cart, // Món đang chờ gửi { id: qty }
+  orderedCart = {}, // Món đã đặt thành công { id: qty }
+  products, // Danh sách thông tin sản phẩm đầy đủ
+  updateCart, // Hàm cập nhật giỏ hàng tạm
+  notes // Ghi chú của từng món
+}) => {
+  /**
+   * Giảm số lượng hoặc xóa món khỏi giỏ hàng tạm.
+   */
   const removeItem = (id) => {
     const currentQty = cart[id] || 0;
     const newQty = currentQty - 1;
@@ -13,7 +26,9 @@ const CartBody = ({ cart, orderedCart = {}, products, updateCart, notes }) => {
     }
   };
 
-  // Tính tổng tiền (bao gồm món đang chọn và món đã đặt)
+  /**
+   * Tính tổng tiền cho một nhóm các mặt hàng (cart hoặc orderedCart).
+   */
   const calculateTotal = (itemsMap) => {
     return Object.entries(itemsMap).reduce((sum, [id, qty]) => {
       const product = products.find((p) => p.id === parseInt(id));
@@ -25,6 +40,9 @@ const CartBody = ({ cart, orderedCart = {}, products, updateCart, notes }) => {
   const totalOrdered = calculateTotal(orderedCart);
   const grandTotal = totalNew + totalOrdered;
 
+  /**
+   * Render thông tin của một dòng mặt hàng trong giỏ hàng.
+   */
   const renderItem = (id, qty, isOrdered) => {
     const item = products.find((p) => p.id === parseInt(id));
     if (!item) return null;
@@ -34,6 +52,7 @@ const CartBody = ({ cart, orderedCart = {}, products, updateCart, notes }) => {
         key={`${isOrdered ? "ord" : "new"}-${id}`}
         className="cart-item"
         style={{
+          // Món đã đặt hiển thị viền xanh lá, món đang chọn hiển thị viền xanh dương
           borderLeft: isOrdered ? "4px solid #4caf50" : "4px solid #2196f3",
         }}
       >
@@ -59,6 +78,7 @@ const CartBody = ({ cart, orderedCart = {}, products, updateCart, notes }) => {
           <p>Số lượng: {qty}</p>
           {notes[id] && <p className="cart-item-note">Ghi chú: {notes[id]}</p>}
         </div>
+        {/* Chỉ hiển thị nút xóa cho các món chưa gửi bếp */}
         {!isOrdered && (
           <button className="cart-item-remove" onClick={() => removeItem(id)}>
             X

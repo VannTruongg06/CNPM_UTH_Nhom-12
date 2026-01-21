@@ -2,7 +2,7 @@
   display: flex;
   height: calc(100vh - 60px);
   font-family: "Segoe UI", sans-serif;
-  background-color: #3e0e0e;
+  background-color: var(--primary-bg-dark);
   overflow: hidden;
 }
 
@@ -10,7 +10,7 @@
 .pos-bill-section {
   flex: 6;
   min-width: 500px;
-  background-color: #5c1515;
+  background-color: var(--secondary-bg-dark);
   display: flex;
   flex-direction: column;
   border-right: 2px solid #333;
@@ -37,7 +37,7 @@
 
 .pos-bill-body {
   flex-grow: 1;
-  background-color: #5c1515;
+  background-color: var(--secondary-bg-dark);
   overflow-y: auto;
 }
 .pos-section-title {
@@ -56,10 +56,10 @@
   margin-bottom: 5px;
 }
 .pos-item-block.new {
-  border-left-color: #2196f3;
+  border-left-color: var(--color-info);
 }
 .pos-item-block.ordered {
-  border-left-color: #4caf50;
+  border-left-color: var(--color-success);
 }
 
 .pos-item-main {
@@ -98,7 +98,7 @@
 .pos-item-remove {
   background: #fee;
   color: #ff7675;
-  border: 1px solid #e74c3c;
+  border: 1px solid var(--color-warning);
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -133,7 +133,7 @@
   margin-top: 20px;
   padding: 40px;
   background-color: #982e32;
-  color: #fff;
+  color: var(--text-light);
   text-align: center;
 }
 
@@ -150,7 +150,7 @@
   margin-bottom: 15px;
 }
 .pos-total-val {
-  color: #ffd700;
+  color: var(--color-gold);
   font-size: 1.6rem;
 }
 .pos-actions {
@@ -297,7 +297,7 @@
   border: 2px solid transparent;
 }
 .pos-menu-card.selected {
-  border-color: #2196f3;
+  border-color: var(--color-info);
 }
 .pos-menu-card-row {
   display: flex;
@@ -317,11 +317,11 @@
 .pos-menu-name {
   font-size: 15px;
   font-weight: bold;
-  color: #333;
+  color: var(--text-dark);
 }
 .pos-menu-price {
   font-size: 14px;
-  color: #e74c3c;
+  color: var(--color-warning);
   font-weight: bold;
 }
 .pos-menu-qty-control {
@@ -377,7 +377,7 @@
   flex-direction: column;
   gap: 15px;
   border-radius: 8px;
-  color: #333;
+  color: var(--text-dark);
 }
 .pay-row {
   display: flex;
@@ -392,7 +392,7 @@
 .pay-value {
   font-weight: bold;
   font-size: 16px;
-  color: #333;
+  color: var(--text-dark);
 }
 .pay-value.red {
   color: #d32f2f;
@@ -449,7 +449,7 @@
   border-radius: 4px;
   border: 1px solid #999;
   background: #5d9cec;
-  color: white;
+  color: var(--text-light);
   font-weight: bold;
 }
 

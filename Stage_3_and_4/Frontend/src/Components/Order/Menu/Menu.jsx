@@ -5,20 +5,24 @@ import logo from "../../../assets/images/Uminoo-logo.png";
 
 // Data giả lập (fallback)
 import {
-  PRODUCTS as FALLBACK_PRODUCTS,
-  CATEGORIES as FALLBACK_CATEGORIES,
-} from "../../../Data.js";
+  MOCK_PRODUCTS as FALLBACK_PRODUCTS,
+  MOCK_CATEGORIES as FALLBACK_CATEGORIES,
+} from "../../../mockData.js";
 import { fetchMenuData } from "../../../services/menuService.js";
 
+/**
+ * Màn hình Thực đơn (Menu) dành cho khách hàng chọn món.
+ * Bao gồm lọc theo danh mục, tăng giảm số lượng và thêm ghi chú cho từng món.
+ */
 const Menu = ({ onBack, cart, updateCart, notes, updateNotes }) => {
   const [activeCategory, setActiveCategory] = useState("Tất cả");
-  const [showNoteInput, setShowNoteInput] = useState({}); // State để toggle input
-  const [products, setProducts] = useState(FALLBACK_PRODUCTS); // State cho products từ API
-  const [categories, setCategories] = useState(FALLBACK_CATEGORIES); // State cho categories từ API
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
+  const [showNoteInput, setShowNoteInput] = useState({}); // State để ẩn/hiện ô nhập ghi chú
+  const [products, setProducts] = useState(FALLBACK_PRODUCTS); // Danh sách sản phẩm từ API
+  const [categories, setCategories] = useState(FALLBACK_CATEGORIES); // Danh sách danh mục từ API
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetch menu data from API khi component mount
+  // Tải dữ liệu thực đơn khi vào trang
   useEffect(() => {
     const loadMenuData = async () => {
       try {
@@ -28,7 +32,7 @@ const Menu = ({ onBack, cart, updateCart, notes, updateNotes }) => {
 
         console.log("Menu data received:", data);
 
-        // Format từ backend: { categories: [...], products: [...] }
+        // Xử lý dữ liệu sản phẩm
         if (data.products && Array.isArray(data.products)) {
           setProducts(data.products);
           console.log("Products set:", data.products.length, "items");
@@ -36,12 +40,12 @@ const Menu = ({ onBack, cart, updateCart, notes, updateNotes }) => {
           console.warn("No products in response or products is not an array");
         }
 
+        // Xử lý dữ liệu danh mục
         if (data.categories && Array.isArray(data.categories)) {
-          // Thêm "Tất cả" vào đầu danh sách categories
           setCategories(["Tất cả", ...data.categories]);
           console.log("Categories set:", ["Tất cả", ...data.categories]);
         } else if (data.products && Array.isArray(data.products)) {
-          // Nếu không có categories, tự động tạo từ products
+          // Tự động tạo danh mục từ products nếu backend không trả về mảng categories riêng
           const uniqueCategories = [
             ...new Set(data.products.map((p) => p.category).filter(Boolean)),
           ];
@@ -61,7 +65,6 @@ const Menu = ({ onBack, cart, updateCart, notes, updateNotes }) => {
           err.message ||
           "Không thể tải dữ liệu menu. Đang sử dụng dữ liệu mặc định.";
         setError(errorMessage);
-        // Giữ nguyên fallback data đã được set ban đầu
       } finally {
         setLoading(false);
       }
@@ -70,17 +73,24 @@ const Menu = ({ onBack, cart, updateCart, notes, updateNotes }) => {
     loadMenuData();
   }, []);
 
-  // Hàm cập nhật ghi chú
+  /**
+   * Cập nhật ghi chú cho một món ăn cụ thể.
+   */
   const updateNote = (id, note) => {
     updateNotes({ ...notes, [id]: note });
   };
 
-  // Hàm toggle input ghi chú
+  /**
+   * Ẩn/Hiện ô nhập ghi chú của món ăn.
+   */
   const toggleNoteInput = (id) => {
     setShowNoteInput((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Hàm tăng/giảm số lượng
+  /**
+   * Tăng hoặc giảm số lượng món ăn trong giỏ hàng.
+   * Nếu số lượng về 0, món ăn sẽ bị xóa khỏi giỏ.
+   */
   const updateQuantity = (id, delta) => {
     const currentQty = cart[id] || 0;
     const newQty = currentQty + delta;

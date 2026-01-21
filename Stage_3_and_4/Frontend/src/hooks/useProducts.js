@@ -1,7 +1,11 @@
 ﻿import { useState, useEffect } from "react";
-import { PRODUCTS as FALLBACK_PRODUCTS } from "../Data.js";
+import { MOCK_PRODUCTS as FALLBACK_PRODUCTS } from "../mockData.js";
 import { fetchMenuData } from "../services/menuService.js";
 
+/**
+ * Hook lấy danh sách sản phẩm để hiển thị Menu cho Client.
+ * Tự động fallback về dữ liệu mẫu (Data.js) nếu API lỗi.
+ */
 export const useProducts = () => {
   const [products, setProducts] = useState(FALLBACK_PRODUCTS);
 

@@ -10,9 +10,9 @@ import {
 } from "../../services/orderService";
 import { fetchTables } from "../../services/tableService";
 import {
-  PRODUCTS as MOCK_PRODUCTS,
-  CATEGORIES as MOCK_CATEGORIES,
-} from "../../Data.js";
+  MOCK_PRODUCTS,
+  MOCK_CATEGORIES as CATEGORIES,
+} from "../../mockData.js";
 
 import BillSection from "../../Components/Admin/POS/BillSection";
 import TableGrid from "../../Components/Admin/POS/TableGrid";
@@ -20,27 +20,38 @@ import MenuGrid from "../../Components/Admin/POS/MenuGrid";
 import PaymentPanel from "../../Components/Admin/POS/PaymentPanel";
 import PrintableBill from "../../Components/Admin/POS/PrintableBill";
 
+/**
+ * Component POS (Point of Sale) - Trung tâm xử lý bán hàng.
+ * Chức năng: Chọn bàn, Gọi món, Xem hóa đơn tạm tính, Hủy đơn và Thanh toán.
+ */
 const POS = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const role = localStorage.getItem("role");
-  const [activeTab, setActiveTab] = useState("table");
+  const role = localStorage.getItem("role"); // Quyền của người dùng (ADMIN/STAFF)
+  const [activeTab, setActiveTab] = useState("table"); // Tab hiện tại (table/menu/payment)
+  
+  // Dữ liệu Menu
   const [products, setProducts] = useState(MOCK_PRODUCTS || []);
   const [categories, setCategories] = useState(MOCK_CATEGORIES || ["Tất cả"]);
   const [selectedCategory, setSelectedCategory] = useState("Tất cả");
 
-  const [cart, setCart] = useState([]);
-  const [notes, setNotes] = useState({});
-  const [orderedItems, setOrderedItems] = useState([]);
+  // Giỏ hàng và trạng thái bàn
+  const [cart, setCart] = useState([]); // Các món đang chọn (chưa gửi bếp)
+  const [notes, setNotes] = useState({}); // Ghi chú món ăn
+  const [orderedItems, setOrderedItems] = useState([]); // Các món đã gọi thành công
 
-  const [selectedTable, setSelectedTable] = useState(null);
+  const [selectedTable, setSelectedTable] = useState(null); // Bàn đang được chọn
   const [loading, setLoading] = useState(false);
-  const [tables, setTables] = useState([]);
+  const [tables, setTables] = useState([]); // Danh sách các bàn
 
+  // Thông tin thanh toán
   const [discount, setDiscount] = useState(0);
   const [surcharge, setSurcharge] = useState(0);
   const [customerPaid, setCustomerPaid] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("Tiền mặt");
 
+  /**
+   * Tải danh sách bàn từ server.
+   */
   const loadTablesData = async () => {
     try {
       const tableData = await fetchTables();
@@ -55,6 +66,7 @@ const POS = () => {
     }
   };
 
+  // Khởi tạo dữ liệu và thiết lập tự động cập nhật trạng thái bàn mỗi 5 giây
   useEffect(() => {
     const loadInitialData = async () => {
       try {
@@ -71,6 +83,7 @@ const POS = () => {
 
         const currentTables = await loadTablesData();
 
+        // Xử lý nếu đi từ link thông báo (có tableId trên URL)
         const tableIdParam = searchParams.get("tableId");
         if (tableIdParam && currentTables.length > 0) {
           const targetTable = currentTables.find(
@@ -82,6 +95,7 @@ const POS = () => {
           }
         }
       } catch (err) {
+        // Fallback dữ liệu mẫu nếu API lỗi
         setTables(
           Array.from({ length: 24 }, (_, i) => ({
             id: i + 1,
@@ -100,6 +114,9 @@ const POS = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  /**
+   * Trả về class CSS tương ứng với trạng thái bàn.
+   */
   const getTableStatusClass = (status) => {
     switch (status) {
       case "occupied":
@@ -116,6 +133,9 @@ const POS = () => {
     return (p.category || p.phan_loai) === selectedCategory;
   });
 
+  /**
+   * Tải chi tiết đơn hàng hiện tại của bàn (các món đã gọi).
+   */
   const loadCurrentOrder = async (tableId) => {
     try {
       const orderData = await getOrderDetails(tableId);
@@ -125,6 +145,9 @@ const POS = () => {
     }
   };
 
+  /**
+   * Xử lý khi click vào một bàn.
+   */
   const handleTableClick = async (table) => {
     setSelectedTable(table.id);
     setCart([]);
@@ -139,6 +162,9 @@ const POS = () => {
     }
   };
 
+  /**
+   * Thêm/Bớt số lượng món ăn trong giỏ hàng tạm.
+   */
   const updateCardQty = (product, amount) => {
     const existItem = cart.find((x) => x.id === product.id);
     if (existItem) {
@@ -158,6 +184,9 @@ const POS = () => {
 
   const removeItem = (id) => setCart(cart.filter((x) => x.id !== id));
 
+  /**
+   * Tính tổng tiền (Gồm món mới chọn + món đã gọi).
+   */
   const calculateTotal = () => {
     const totalNew = cart.reduce(
       (acc, item) => acc + (item.price || 0) * item.qty,
@@ -170,11 +199,17 @@ const POS = () => {
     return totalNew + totalOrdered;
   };
 
+  /**
+   * Tổng tiền sau khi trừ chiết khấu và cộng phụ phí.
+   */
   const finalTotal = () => {
     const subTotal = calculateTotal();
     return subTotal - subTotal * (discount / 100) + surcharge;
   };
 
+  /**
+   * Gửi danh sách món đang chọn xuống bếp/server.
+   */
   const handleSendOrder = async () => {
     if (!selectedTable || cart.length === 0) return;
     setLoading(true);
@@ -192,6 +227,7 @@ const POS = () => {
       await loadTablesData();
       alert("Gửi thực đơn thành công!");
     } catch (e) {
+      // Mockup behavior nếu API lỗi
       setOrderedItems([
         ...orderedItems,
         ...cart.map((i) => ({ ...i, quantity: i.qty, note: notes[i.id] })),
@@ -202,6 +238,9 @@ const POS = () => {
     }
   };
 
+  /**
+   * Hủy toàn bộ đơn hàng của bàn (Yêu cầu quyền ADMIN).
+   */
   const handleCancelOrder = async () => {
     if (!selectedTable) return;
 
@@ -222,7 +261,7 @@ const POS = () => {
       try {
         await cancelOrder(selectedTable);
         alert("Đã hủy đơn thành công!");
-        // Reset everything
+        // Reset trạng thái về ban đầu
         setCart([]);
         setOrderedItems([]);
         setDiscount(0);
@@ -236,13 +275,16 @@ const POS = () => {
         setLoading(false);
       }
     } else {
-      // Just clear local cart
+      // Nếu chưa gọi món nào thì chỉ việc bỏ chọn bàn
       setCart([]);
       setSelectedTable(null);
       setActiveTab("table");
     }
   };
 
+  /**
+   * Điều hướng đến màn hình thanh toán hoặc thực hiện thanh toán.
+   */
   const handleMainPaymentButton = () => {
     if (!selectedTable) {
       alert("Vui lòng chọn bàn trước!");
@@ -256,6 +298,9 @@ const POS = () => {
     }
   };
 
+  /**
+   * Xác nhận thanh toán và in hóa đơn (Yêu cầu quyền ADMIN).
+   */
   const handleFinalPayment = async () => {
     if (role?.toUpperCase() !== "ADMIN") {
       alert("Chỉ quản trị viên mới có quyền thanh toán!");
@@ -272,7 +317,7 @@ const POS = () => {
 
       await checkoutTable(selectedTable, methodMap[paymentMethod] || "cash");
 
-      window.print();
+      window.print(); // Gọi lệnh in của trình duyệt
       setCart([]);
       setOrderedItems([]);
       setDiscount(0);
@@ -288,6 +333,9 @@ const POS = () => {
     }
   };
 
+  /**
+   * Gom tất cả các món (đã đặt + đang chọn) để hiển thị trên hóa đơn in.
+   */
   const allItemsToPrint = [
     ...orderedItems.map((i) => ({
       ...i,

@@ -3,12 +3,19 @@ import CartHeader from "../../Components/Order/Cart/CartHeader.jsx";
 import CartBody from "../../Components/Order/Cart/CartBody.jsx";
 import CartFooter from "../../Components/Order/Cart/CartFooter.jsx";
 import Menu from "../../Components/Order/Menu/Menu.jsx";
-import { PRODUCTS as FALLBACK_PRODUCTS } from "../../Data.js";
+import { MOCK_PRODUCTS as FALLBACK_PRODUCTS } from "../../mockData.js";
 import { fetchMenuData } from "../../services/menuService.js";
 import { getTableById } from "../../services/tableService.js";
 import { getOrderDetails } from "../../services/orderService.js";
 
+/**
+ * Component chính cho luồng gọi món của Khách hàng (hoặc Nhân viên dùng UI Client).
+ * Gồm 2 màn hình chính: Giỏ hàng (cart) và Thực đơn chọn món (menu).
+ */
 function ClientOrder({ initialTableId, staffName, onBack }) {
+  /**
+   * Lấy ID bàn từ tham số trên URL (query string).
+   */
   const parseTableIdFromUrl = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const id =
@@ -19,15 +26,16 @@ function ClientOrder({ initialTableId, staffName, onBack }) {
   const [tableId, setTableId] = useState(
     () => initialTableId || parseTableIdFromUrl()
   );
-  const [currentScreen, setCurrentScreen] = useState("cart");
-  const [cart, setCart] = useState({});
-  const [orderedCart, setOrderedCart] = useState({});
-  const [notes, setNotes] = useState({});
-  const [products, setProducts] = useState(FALLBACK_PRODUCTS);
+  const [currentScreen, setCurrentScreen] = useState("cart"); // Chuyển đổi giữa 'cart' và 'menu'
+  const [cart, setCart] = useState({}); // Các món đang chọn nhưng chưa gửi bếp { prodId: quantity }
+  const [orderedCart, setOrderedCart] = useState({}); // Các món đã gọi thành công từ trước
+  const [notes, setNotes] = useState({}); // Ghi chú cho từng món ăn
+  const [products, setProducts] = useState(FALLBACK_PRODUCTS); // Danh sách sản phẩm
   const [tableNumber, setTableNumber] = useState(() =>
     tableId ? `Bàn ${tableId}` : null
   );
 
+  // Cập nhật thông tin số bàn khi tableId thay đổi
   useEffect(() => {
     const loadTableInfo = async () => {
       const targetId = tableId || initialTableId || parseTableIdFromUrl();
@@ -48,7 +56,9 @@ function ClientOrder({ initialTableId, staffName, onBack }) {
     loadTableInfo();
   }, [initialTableId]);
 
-  // Load ordered items for this table
+  /**
+   * Tải danh sách các món ăn bàn này đã gọi từ trước (từ server).
+   */
   useEffect(() => {
     const fetchExistingOrder = async () => {
       const targetId = tableId || initialTableId || parseTableIdFromUrl();
@@ -70,6 +80,7 @@ function ClientOrder({ initialTableId, staffName, onBack }) {
     fetchExistingOrder();
   }, [tableId, initialTableId]);
 
+  // Tải danh sách thực đơn (Menu)
   useEffect(() => {
     const loadProducts = async () => {
       try {
@@ -86,6 +97,10 @@ function ClientOrder({ initialTableId, staffName, onBack }) {
     loadProducts();
   }, []);
 
+  /**
+   * Xử lý sau khi nhấn nút "Gọi món" thành công.
+   * Chuyển các món từ giỏ hàng tạm sang danh sách đã gọi.
+   */
   const handleOrderSuccess = () => {
     const newOrderedCart = { ...orderedCart };
     Object.entries(cart).forEach(([id, qty]) => {
@@ -95,6 +110,7 @@ function ClientOrder({ initialTableId, staffName, onBack }) {
     setCart({});
   };
 
+  // Render màn hình Thực đơn (Menu)
   if (currentScreen === "menu") {
     return (
       <Menu
@@ -107,6 +123,7 @@ function ClientOrder({ initialTableId, staffName, onBack }) {
     );
   }
 
+  // Render màn hình Giỏ hàng (Cart)
   return (
     <div
       className="client-order-wrapper"

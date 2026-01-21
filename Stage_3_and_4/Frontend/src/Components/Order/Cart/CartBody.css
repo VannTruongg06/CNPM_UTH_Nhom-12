@@ -66,8 +66,8 @@
 }
 
 .cart-item-remove {
-  background: #ff4444;
-  color: white;
+  background: var(--color-warning);
+  color: var(--text-light);
   border: none;
   border-radius: 50%;
   width: 40px;

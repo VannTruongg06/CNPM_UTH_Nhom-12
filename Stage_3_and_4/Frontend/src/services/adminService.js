@@ -1,6 +1,11 @@
 import { API_BASE_URL, API_ENDPOINTS } from "../config/api.js";
 
-// Hàm lấy thống kê Dashboard từ API
+/**
+ * Lấy số liệu thống kê cho Dashboard (Doanh thu, Đơn hàng, v.v.)
+ * @param {string} timeRange - Khoảng thời gian (ví dụ: 'today', 'week', 'month'). Mặc định là 'today'.
+ * @returns {Promise<Object>} - Dữ liệu thống kê từ server.
+ * @throws {Error} - Nếu API trả về lỗi hoặc không kết nối được.
+ */
 export const getDashboardStats = async (timeRange = 'today') => {
   const baseUrl = `${API_BASE_URL}${API_ENDPOINTS.DASHBOARD_STATS}`;
   // Đảm bảo URL kết thúc bằng / trước khi thêm ?range=
@@ -41,7 +46,12 @@ export const getDashboardStats = async (timeRange = 'today') => {
   }
 };
 
-// Hàm xóa một yêu cầu đặt bàn - CẬP NHẬT THEO MẪU MỚI
+/**
+ * Xóa một yêu cầu đặt bàn theo ID.
+ * @param {string|number} id - ID của yêu cầu đặt bàn cần xóa.
+ * @returns {Promise<Object>} - Kết quả từ server sau khi xóa thành công.
+ * @throws {Error} - Lỗi nếu không có token, không đủ quyền, hoặc lỗi server.
+ */
 export const deleteBooking = async (id) => {
   const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
   
@@ -78,6 +88,10 @@ export const deleteBooking = async (id) => {
   }
 };
 
+/**
+ * Lấy danh sách thông báo mới nhất.
+ * @returns {Promise<Array>} - Mảng các thông báo. Trả về mảng rỗng nếu lỗi.
+ */
 export const getNotifications = async () => {
   const url = `${API_BASE_URL}${API_ENDPOINTS.NOTIFICATIONS}`;
   try {

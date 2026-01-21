@@ -3,7 +3,15 @@ import { MOCK_ORDERS, MOCK_PRODUCTS } from "../mockData.js";
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Hàm định dạng dữ liệu đơn hàng
+/**
+ * Định dạng dữ liệu đơn hàng để gửi lên API.
+ * @param {string|number} tableId - ID bàn.
+ * @param {Object} cart - Giỏ hàng dạng { productId: quantity }.
+ * @param {Object} notes - Ghi chú món dạng { productId: note }.
+ * @param {Array} products - Danh sách tất cả sản phẩm để tra cứu giá.
+ * @param {string} staffName - Tên nhân viên (nếu có).
+ * @returns {Object} - Payload chuẩn để gửi API.
+ */
 export const formatOrderData = (
   tableId,
   cart,
@@ -29,7 +37,12 @@ export const formatOrderData = (
   };
 };
 
-// Hàm gửi đơn hàng
+/**
+ * Gửi đơn hàng mới lên server.
+ * @param {Object} orderData - Dữ liệu đơn hàng đã format.
+ * @returns {Promise<Object>} - Kết quả tạo đơn hàng.
+ * @throws {Error} - Nếu gửi thất bại.
+ */
 export const submitOrder = async (orderData) => {
   if (USE_MOCK_DATA) {
     console.log("Mock Submit Order:", orderData);
@@ -53,7 +66,11 @@ export const submitOrder = async (orderData) => {
   return response.json();
 };
 
-// Hàm lấy chi tiết đơn hàng cho một bàn (CẦN THIẾT CHO POS)
+/**
+ * Lấy chi tiết đơn hàng hiện tại của một bàn (Dùng cho POS).
+ * @param {string|number} tableId - ID bàn cần xem.
+ * @returns {Promise<Object>} - Chi tiết đơn hàng (các món đã gọi).
+ */
 export const getOrderDetails = async (tableId) => {
   if (USE_MOCK_DATA) {
     await delay(500);
@@ -108,6 +125,12 @@ export const getOrders = async () => {
   return [];
 };
 
+/**
+ * Gửi yêu cầu thanh toán (từ phía Client).
+ * @param {string|number} tableId - ID bàn.
+ * @param {string} tableName - Tên bàn.
+ * @returns {Promise<Object>} - Kết quả yêu cầu.
+ */
 export const requestPayment = async (tableId, tableName) => {
   if (USE_MOCK_DATA) {
     console.log(`Mock Request Payment for ${tableName}`);
@@ -152,6 +175,12 @@ export const requestPayment = async (tableId, tableName) => {
   return response.json();
 };
 
+/**
+ * Thực hiện thanh toán đơn hàng (từ phía Thu ngân/POS).
+ * @param {string|number} tableId - ID bàn.
+ * @param {string} paymentMethod - Phương thức (cash/transfer).
+ * @returns {Promise<Object>} - Kết quả thanh toán.
+ */
 export const checkoutTable = async (tableId, paymentMethod) => {
   const url = `${API_BASE_URL}${API_ENDPOINTS.CHECKOUT(tableId)}`;
   const response = await fetch(url, {
@@ -171,6 +200,11 @@ export const checkoutTable = async (tableId, paymentMethod) => {
   return response.json();
 };
 
+/**
+ * Hủy đơn hàng của bàn (Xóa sạch items).
+ * @param {string|number} tableId - ID bàn.
+ * @returns {Promise<Object>} - Kết quả hủy.
+ */
 export const cancelOrder = async (tableId) => {
   const url = `${API_BASE_URL}/api/orders/cancel/`;
   const response = await fetch(url, {

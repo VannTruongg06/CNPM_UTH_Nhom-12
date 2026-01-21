@@ -5,6 +5,10 @@ import {
   deleteProduct as apiDeleteProduct,
 } from "../services/menuService";
 
+/**
+ * Hook xử lý logic cho trang Quản lý Món ăn (Admin).
+ * Bao gồm: Tải danh sách, Thêm, Sửa, Xóa món ăn.
+ */
 export const useProductManager = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [products, setProducts] = useState([]);
@@ -20,6 +24,7 @@ export const useProductManager = () => {
     isEdit: false,
   });
 
+  // Tải dữ liệu khi component mount
   const loadData = async () => {
     try {
       setLoading(true);
@@ -29,6 +34,7 @@ export const useProductManager = () => {
         if (data.categories && data.categories.length > 0) {
           setCategories(data.categories.map((c) => c.name || c));
         } else if (data.products) {
+          // Tự động trích xuất danh mục từ danh sách sản phẩm nếu không có API danh mục riêng
           const uniqueGroups = [
             ...new Set(data.products.map((p) => p.category)),
           ].filter(Boolean);

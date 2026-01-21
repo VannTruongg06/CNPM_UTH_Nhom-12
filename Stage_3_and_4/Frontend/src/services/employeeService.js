@@ -3,6 +3,11 @@ import { MOCK_EMPLOYEES } from "../mockData.js";
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+/**
+ * Lấy danh sách nhân viên.
+ * @returns {Promise<Array>} - Mảng danh sách nhân viên.
+ * @throws {Error} - Nếu không tải được danh sách.
+ */
 export const getEmployees = async () => {
   if (USE_MOCK_DATA) {
     await delay(500);
@@ -20,6 +25,11 @@ export const getEmployees = async () => {
   return response.json();
 };
 
+/**
+ * Lưu thông tin nhân viên (Thêm mới hoặc Cập nhật).
+ * @param {Object} employee - Object nhân viên. Nếu có id là cập nhật, ngược lại là thêm mới.
+ * @returns {Promise<Object>} - Kết quả từ API.
+ */
 export const saveEmployee = async (employee) => {
   if (USE_MOCK_DATA) {
     console.log("Mock Save Employee:", employee);
@@ -57,6 +67,11 @@ export const saveEmployee = async (employee) => {
   return response.json();
 };
 
+/**
+ * Xóa nhân viên theo ID.
+ * @param {string|number} id - ID nhân viên cần xóa.
+ * @returns {Promise<boolean>} - True nếu thành công.
+ */
 export const deleteEmployee = async (id) => {
   if (USE_MOCK_DATA) {
     console.log("Mock Delete Employee ID:", id);

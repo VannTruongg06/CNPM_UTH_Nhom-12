@@ -1,14 +1,18 @@
 import React from 'react';
 
+/**
+ * Component hiển thị danh sách hóa đơn tạm tính của bàn đang chọn.
+ * Phân chia rõ ràng giữa món mới (đang chọn) và món đã gửi (đã đặt).
+ */
 const BillSection = ({
-  cart,
-  orderedItems,
-  removeItem,
-  notes,
-  calculateTotal,
-  handleSendOrder,
-  handleMainPaymentButton,
-  handleCancelOrder,
+  cart, // Mảng các món ăn mới trong giỏ hàng tạm
+  orderedItems, // Mảng các món ăn đã được gửi xuống bếp/server
+  removeItem, // Hàm xóa món khỏi giỏ hàng tạm
+  notes, // Ghi chú cho các món
+  calculateTotal, // Hàm tính tổng cộng tiền
+  handleSendOrder, // Hàm gửi món trong giỏ hàng tạm xuống server
+  handleMainPaymentButton, // Hàm xử lý nút thanh toán
+  handleCancelOrder, // Hàm xử lý hủy/xóa thực đơn
   activeTab,
   loading,
   setSelectedTable,

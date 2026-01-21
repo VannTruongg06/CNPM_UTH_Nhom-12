@@ -1,5 +1,9 @@
 ﻿import React from 'react';
 
+/**
+ * Component xử lý tính toán tiền thanh toán.
+ * Bao gồm: Phụ thu, Giảm giá (%), Tiền khách đưa, Tiền thừa và Phương thức thanh toán.
+ */
 const PaymentPanel = ({ 
   selectedTable, 
   calculateTotal, 

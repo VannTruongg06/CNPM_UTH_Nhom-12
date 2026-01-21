@@ -8,10 +8,14 @@ import Japan from '../../assets/images/Japan.png';
 import Facebook from '../../assets/images/FB-link.png';
 import { createBooking } from '../../services/bookingService';
 
+/**
+ * Trang giới thiệu và đặt bàn dành cho Khách vãng lai (Visitor).
+ * Chức năng: Xem thông tin liên hệ, chuyển hướng đến trang gọi món nếu quét mã QR tại bàn, hoặc điền form đặt bàn trước.
+ */
 const ClientBooking = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(false); // Hiển thị giới thiệu hoặc Form đặt bàn
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -20,19 +24,25 @@ const ClientBooking = () => {
   });
   const [loading, setLoading] = useState(false);
 
+  // Kiểm tra nếu khách quét mã QR tại bàn (có tham số tableId trên URL)
   useEffect(() => {
     const tableId = searchParams.get('tableId') || searchParams.get('table');
     if (tableId) {
+      // Tự động chuyển hướng sang trang gọi món cho bàn đó
       navigate(`/order?tableId=${tableId}`);
     }
   }, [searchParams, navigate]);
 
+  /**
+   * Xử lý gửi yêu cầu đặt bàn trước.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       const dateObj = new Date(formData.dateTime);
+      // Tách ngày và giờ theo định dạng server yêu cầu
       const payload = {
         name: formData.name,
         phone: formData.phone,
@@ -44,6 +54,7 @@ const ClientBooking = () => {
       await createBooking(payload);
 
       alert(`Cảm ơn ${formData.name}! Chúng tôi đã nhận yêu cầu đặt bàn.`);
+      // Reset form sau khi gửi thành công
       setFormData({ name: '', phone: '', dateTime: '', guests: 2 });
       setShowForm(false);
     } catch (error) {

@@ -1,7 +1,7 @@
 ﻿/* Container chính của Dashboard */
 .dashboard-wrapper {
   font-family: "Segoe UI", sans-serif;
-  color: #333;
+  color: var(--text-dark);
 }
 
 .dashboard-top-bar {
@@ -15,7 +15,7 @@
 }
 
 .page-title {
-  color: white;
+  color: var(--text-light);
   font-size: 24px;
   margin: 0;
   font-weight: 700;
@@ -66,7 +66,7 @@
 
 .stat-label {
   font-size: 14px;
-  color: #333;
+  color: var(--text-dark);
 }
 
 /* --- 3. Content Split --- */
@@ -78,7 +78,7 @@
 }
 
 .panel-section {
-  background-color: white;
+  background-color: var(--text-light);
   min-height: 500px;
   display: flex;
   flex-direction: column;
@@ -118,7 +118,7 @@
 
 .btn-delete {
   background-color: #c0392b;
-  color: white;
+  color: var(--text-light);
   border: none;
   width: 24px;
   height: 24px;
@@ -128,7 +128,7 @@
 
 /* --- Món bán chạy --- */
 .best-seller-list {
-  background-color: white;
+  background-color: var(--text-light);
   flex-grow: 1;
 }
 

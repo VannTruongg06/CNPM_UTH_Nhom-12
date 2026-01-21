@@ -8,6 +8,10 @@ import {
 import EmployeeForm from "../../Components/Admin/Employee/EmployeeForm";
 import EmployeeTable from "../../Components/Admin/Employee/EmployeeTable";
 
+/**
+ * Trang Quản lý nhân viên.
+ * Cho phép Admin xem danh sách, thêm tài khoản mới, đổi mật khẩu hoặc xóa nhân viên.
+ */
 const EmployeeManager = () => {
   // State quản lý màn hình (Danh sách vs Form)
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -16,16 +20,19 @@ const EmployeeManager = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // State form data
+  // State lưu trữ thông tin khi nhập liệu trên form
   const [formData, setFormData] = useState({
     id: null,
     name: "",
     user: "",
     pass: "",
     confirmPass: "",
-    role: "staff", // Mặc định là nhân viên
+    role: "staff", // Mặc định là nhân viên (staff)
   });
 
+  /**
+   * Tải danh sách nhân viên từ API.
+   */
   const loadEmployees = async () => {
     setLoading(true);
     try {
@@ -38,22 +45,26 @@ const EmployeeManager = () => {
     }
   };
 
-  // Load dữ liệu khi vào trang
+  // Load dữ liệu khi vào trang lần đầu
   useEffect(() => {
     loadEmployees();
   }, []);
 
-  // Xử lý nhập liệu
+  /**
+   * Cập nhật formData khi người dùng nhập liệu.
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Xử lý Submit (Thêm hoặc Sửa)
+  /**
+   * Xử lý gửi Form (Thêm hoặc Sửa thông tin nhân viên).
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate mật khẩu
+    // Kiểm tra tính hợp lệ của dữ liệu
     if (formData.pass !== formData.confirmPass) {
       alert("Mật khẩu nhập lại không khớp!");
       return;
@@ -76,7 +87,9 @@ const EmployeeManager = () => {
     }
   };
 
-  // Mở form Thêm mới
+  /**
+   * Mở form thêm mới nhân viên (reset data).
+   */
   const handleAddNew = () => {
     setFormData({
       id: null,
@@ -89,18 +102,24 @@ const EmployeeManager = () => {
     setIsFormOpen(true);
   };
 
+  /**
+   * Mở form chỉnh sửa cho một nhân viên cụ thể.
+   */
   const handleEdit = (emp) => {
     setFormData({
       id: emp.id,
       name: emp.name,
       user: emp.user,
-      pass: "",
+      pass: "", // Không hiển thị mật khẩu cũ vì lý do bảo mật
       confirmPass: "",
       role: emp.role || "staff",
     });
     setIsFormOpen(true);
   };
 
+  /**
+   * Xử lý xóa nhân viên.
+   */
   const handleDelete = async (id) => {
     if (window.confirm("Bạn chắc chắn muốn xóa tài khoản này?")) {
       try {
@@ -112,6 +131,9 @@ const EmployeeManager = () => {
     }
   };
 
+  /**
+   * Đóng form và reset dữ liệu tạm.
+   */
   const handleCloseForm = () => {
     setIsFormOpen(false);
     setFormData({

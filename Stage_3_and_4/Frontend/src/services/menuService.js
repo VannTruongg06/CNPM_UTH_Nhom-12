@@ -3,6 +3,10 @@ import { MOCK_PRODUCTS } from "../mockData.js";
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+/**
+ * Lấy dữ liệu Menu đầy đủ (Sản phẩm và Danh mục).
+ * @returns {Promise<Object>} - Object chứa { products: [], categories: [] }.
+ */
 export const fetchMenuData = async () => {
   if (USE_MOCK_DATA) {
     console.log("Using Mock Data for Menu");
@@ -30,6 +34,11 @@ export const fetchMenuData = async () => {
   }
 };
 
+/**
+ * Lấy danh sách items (món ăn) từ API.
+ * Thường dùng cho trang quản lý sản phẩm.
+ * @returns {Promise<Array>} - Mảng danh sách các món ăn.
+ */
 export const fetchItems = async () => {
   if (USE_MOCK_DATA) {
     console.log("Using Mock Data for Items");
@@ -60,6 +69,11 @@ export const fetchItems = async () => {
   }
 };
 
+/**
+ * Lưu thông tin sản phẩm (Thêm mới hoặc Cập nhật).
+ * @param {Object} product - Thông tin sản phẩm.
+ * @returns {Promise<Object>} - Kết quả từ server.
+ */
 export const saveProduct = async (product) => {
   if (USE_MOCK_DATA) {
     console.log("Mock Save Product:", product);
@@ -106,6 +120,11 @@ export const saveProduct = async (product) => {
   }
 };
 
+/**
+ * Xóa sản phẩm theo ID.
+ * @param {string|number} id - ID sản phẩm.
+ * @returns {Promise<boolean>} - True nếu xóa thành công.
+ */
 export const deleteProduct = async (id) => {
   if (USE_MOCK_DATA) {
     console.log("Mock Delete Product ID:", id);

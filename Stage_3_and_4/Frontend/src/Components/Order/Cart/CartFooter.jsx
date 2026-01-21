@@ -6,6 +6,11 @@ import {
   requestPayment,
 } from "../../../services/orderService.js";
 
+/**
+ * Thanh tác vụ dưới cùng của màn hình Giỏ hàng.
+ * Tự động chuyển đổi giữa nút "Gửi thực đơn" (nếu có món mới) 
+ * và nút "Yêu cầu thanh toán" (nếu giỏ hàng trống).
+ */
 const CartFooter = ({
   cart,
   notes,
@@ -18,6 +23,9 @@ const CartFooter = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const hasItems = Object.keys(cart).length > 0;
 
+  /**
+   * Gửi danh sách các món đang chọn trong giỏ hàng xuống server.
+   */
   const handleSubmitOrder = async () => {
     if (!hasItems) {
       alert("Vui lòng chọn món trước khi gửi!");
@@ -46,6 +54,9 @@ const CartFooter = ({
     }
   };
 
+  /**
+   * Gửi thông báo yêu cầu thanh toán tới quản trị viên/thu ngân.
+   */
   const handleRequestPayment = async () => {
     if (!tableId) {
       alert("Không tìm thấy thông tin bàn. Vui lòng quét lại mã QR!");
@@ -61,6 +72,7 @@ const CartFooter = ({
 
   return (
     <div className="cartFooter cartFooter--fixed">
+      {/* Hiển thị nút Gửi thực đơn nếu có món mới, ngược lại hiển thị nút Yêu cầu thanh toán */}
       {hasItems ? (
         <button
           className="cartFooter__action-btn btn-send-order"

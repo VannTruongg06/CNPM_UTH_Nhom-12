@@ -1,12 +1,29 @@
 :root {
+  /* Màu chủ đạo thương hiệu */
   --primary-red: #6b0307;
+  --primary-bg-dark: #3e0e0e;
+  --secondary-bg-dark: #5c1515;
+  
+  /* Màu trạng thái */
+  --color-success: #4caf50;    /* Xanh lá - Thành công/Đã đặt */
+  --color-info: #2196f3;       /* Xanh dương - Mới/Đang chọn */
+  --color-warning: #e74c3c;    /* Đỏ cam - Cảnh báo/Xóa */
+  --color-gold: #ffd700;       /* Vàng - Tổng tiền/Nổi bật */
+
+  /* Màu text */
+  --text-dark: #333333;
+  --text-light: #ffffff;
 }
+
 html {
-  font-size: 62.5%;
+  font-size: 62.5%; /* 1rem = 10px */
 }
+
 body {
   font-size: 1.6rem;
   font-family: "Sora", sans-serif;
   background-color: var(--primary-red);
+  /* Padding top để tránh header che khuất nội dung (nếu có fixed header) */
   padding-top: 90px;
+  color: var(--text-dark);
 }

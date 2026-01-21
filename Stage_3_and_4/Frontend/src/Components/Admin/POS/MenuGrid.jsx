@@ -1,14 +1,17 @@
 ﻿import React from 'react';
 
+/**
+ * Component hiển thị danh sách thực đơn lọc theo danh mục cho POS.
+ */
 const MenuGrid = ({ 
-  categories, 
-  selectedCategory, 
-  setSelectedCategory, 
-  filteredProducts, 
-  cart, 
-  updateCardQty, 
-  notes, 
-  setNotes 
+  categories, // Danh sách các nhóm món ăn (Sushi, Drink, ...)
+  selectedCategory, // Danh mục đang được chọn
+  setSelectedCategory, // Hàm thay đổi danh mục lọc
+  filteredProducts, // Danh sách sản phẩm đã được lọc
+  cart, // Giỏ hàng tạm hiện tại
+  updateCardQty, // Hàm tăng/giảm số lượng món
+  notes, // State ghi chú
+  setNotes // Hàm cập nhật ghi chú
 }) => {
   return (
     <div className="pos-menu-container">

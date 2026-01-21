@@ -5,8 +5,14 @@ import StatCards from '../../Components/Admin/Dashboard/StatCards';
 import BookingTable from '../../Components/Admin/Dashboard/BookingTable';
 import BestSellerList from '../../Components/Admin/Dashboard/BestSellerList';
 
+/**
+ * Trang Dashboard Quản trị.
+ * Hiển thị tổng quan về doanh thu, số lượng đơn hàng, món ăn bán chạy và danh sách đặt bàn.
+ */
 const Dashboard = () => {
+  // timeRange: Khoảng thời gian thống kê (today, week, month...)
   const [timeRange, setTimeRange] = useState('today');
+  // stats: Lưu trữ dữ liệu thống kê từ API
   const [stats, setStats] = useState({
     revenue: { total: 0, cash: 0, other: 0 },
     ordersCount: 0,
@@ -15,10 +21,14 @@ const Dashboard = () => {
   });
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Định dạng số tiền sang định dạng tiền tệ Việt Nam (VNĐ).
+   */
   const formatMoney = (amount) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
   };
 
+  // Tải lại dữ liệu mỗi khi timeRange thay đổi
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -45,6 +55,10 @@ const Dashboard = () => {
     fetchData();
   }, [timeRange]);
 
+  /**
+   * Xử lý xóa một lịch đặt bàn.
+   * @param {number|string} id - ID của lịch đặt bàn.
+   */
   const handleDeleteBooking = async (id) => {
     if (window.confirm('Bạn có chắc muốn xóa lịch đặt này?')) {
       try {

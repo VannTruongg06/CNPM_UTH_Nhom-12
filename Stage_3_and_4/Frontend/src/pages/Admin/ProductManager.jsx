@@ -8,12 +8,17 @@ import {
 import ProductTable from "../../Components/Admin/Product/ProductTable";
 import ProductForm from "../../Components/Admin/Product/ProductForm";
 
+/**
+ * Trang Quản lý hàng hóa (Món ăn).
+ * Chức năng: Xem danh sách, Thêm mới, Chỉnh sửa thông tin và Xóa món ăn.
+ */
 const ProductManager = () => {
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false); // Trạng thái hiển thị Form (Thêm/Sửa) vs Table (Danh sách)
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Dữ liệu tạm thời khi đang nhập liệu trên Form
   const [formData, setFormData] = useState({
     id: "",
     name: "",
@@ -23,6 +28,9 @@ const ProductManager = () => {
     isEdit: false,
   });
 
+  /**
+   * Tải danh sách hàng hóa và trích xuất danh mục.
+   */
   const loadData = async () => {
     try {
       setLoading(true);
@@ -30,6 +38,7 @@ const ProductManager = () => {
 
       if (Array.isArray(data)) {
         setProducts(data);
+        // Lấy danh sách các danh mục duy nhất từ sản phẩm
         const uniqueGroups = [
           ...new Set(data.map((p) => p.category_name || p.category)),
         ].filter(Boolean);
@@ -46,9 +55,13 @@ const ProductManager = () => {
     loadData();
   }, []);
 
+  /**
+   * Xử lý lưu thông tin sản phẩm (Thêm mới hoặc Cập nhật).
+   */
   const handleSave = async (dataToSave) => {
     const cleanPrice = dataToSave.price ? parseInt(dataToSave.price) : 0;
 
+    // Chặn nhập giá trị quá lớn gây lỗi backend (kiểu Integer của DB)
     if (cleanPrice > 2000000000) {
       alert("Giá quá lớn! Vui lòng nhập giá nhỏ hơn 2 tỷ VNĐ.");
       return;
@@ -77,6 +90,9 @@ const ProductManager = () => {
     }
   };
 
+  /**
+   * Chuẩn bị dữ liệu để chỉnh sửa một món ăn.
+   */
   const handleEdit = (item) => {
     setFormData({
       id: item.id,
@@ -89,6 +105,9 @@ const ProductManager = () => {
     setIsFormOpen(true);
   };
 
+  /**
+   * Xử lý xóa sản phẩm.
+   */
   const handleDelete = async (id) => {
     if (window.confirm("Xóa món này?")) {
       try {
@@ -101,6 +120,9 @@ const ProductManager = () => {
     }
   };
 
+  /**
+   * Chuẩn bị form trống để thêm món ăn mới.
+   */
   const handleAddNew = () => {
     setFormData({
       id: "",

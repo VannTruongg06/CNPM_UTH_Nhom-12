@@ -1,6 +1,13 @@
 ﻿import { useState, useEffect } from "react";
 import { getTableById } from "../services/tableService.js";
 
+/**
+ * Hook xác định bàn hiện tại dựa trên URL params hoặc props.
+ * Hỗ trợ các format URL như: ?tableId=1, ?table=1, ?id=1.
+ * 
+ * @param {string|number} initialTableId - ID bàn khởi tạo (nếu có).
+ * @returns {Object} - { tableId, tableNumber, ... }
+ */
 export const useTable = (initialTableId) => {
   const parseTableIdFromUrl = () => {
     const urlParams = new URLSearchParams(window.location.search);
