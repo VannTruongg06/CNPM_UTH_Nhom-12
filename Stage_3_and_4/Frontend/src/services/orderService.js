@@ -44,25 +44,35 @@ export const formatOrderData = (
  * @returns {Promise<Object>} - Kết quả tạo đơn hàng.
  * @throws {Error} - Nếu gửi thất bại.
  */
-export const submitOrder = async (orderData) => {
+export const submitOrder = async (orderData, lat = null, lon = null) => {
   if (USE_MOCK_DATA) {
-    // console.log("Mock Submit Order:", orderData);
     await delay(800);
     return { success: true, order_id: Math.floor(Math.random() * 1000) };
   }
 
   const url = `${API_BASE_URL}${API_ENDPOINTS.ORDER}`;
+  
+  // Gộp tọa độ vào payload để Backend nhận được 1 lần duy nhất
+  const payload = {
+    ...orderData,
+    lat: lat,
+    lon: lon
+  };
+
+  console.log("🚀 [Frontend] Sending Order with GPS:", payload);
+
   const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "ngrok-skip-browser-warning": "true",
     },
-    body: JSON.stringify(orderData),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
-    throw new Error(`Lỗi gửi đơn hàng: ${response.status}`);
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || errorData.detail || `Lỗi gửi đơn hàng: ${response.status}`);
   }
   return response.json();
 };

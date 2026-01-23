@@ -8,7 +8,7 @@ import {
 
 /**
  * Thanh tác vụ dưới cùng của màn hình Giỏ hàng.
- * Tự động chuyển đổi giữa nút "Gửi thực đơn" (nếu có món mới) 
+ * Tự động chuyển đổi giữa nút "Gửi thực đơn" (nếu có món mới)
  * và nút "Yêu cầu thanh toán" (nếu giỏ hàng trống).
  */
 const CartFooter = ({
@@ -35,23 +35,66 @@ const CartFooter = ({
       alert("Không tìm thấy thông tin bàn. Vui lòng quét lại mã QR!");
       return;
     }
-    try {
-      setIsSubmitting(true);
-      const orderData = formatOrderData(
-        tableId,
-        cart,
-        notes,
-        products,
-        staffName
-      );
-      await submitOrder(orderData);
-      alert("Đã gửi đơn hàng thành công!");
-      if (onOrderSuccess) onOrderSuccess();
-    } catch (error) {
-      alert("Lỗi: " + error.message);
-    } finally {
-      setIsSubmitting(false);
+
+    // Hàm thực hiện gửi đơn hàng lên Backend
+    const performSubmit = async (lat = null, lon = null) => {
+      try {
+        setIsSubmitting(true);
+        const orderData = formatOrderData(
+          tableId,
+          cart,
+          notes,
+          products,
+          staffName,
+        );
+
+        // Gửi tọa độ kèm đơn hàng luôn (Backend sẽ tự check khoảng cách)
+        await submitOrder(orderData, lat, lon);
+
+        alert("Đã gửi đơn hàng thành công!");
+        if (onOrderSuccess) onOrderSuccess();
+      } catch (error) {
+        // Hiển thị lỗi từ Backend (ví dụ: "Bạn đang ở quá xa")
+        alert("Lỗi: " + error.message);
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    // NẾU LÀ NHÂN VIÊN GỌI (Có staffName) -> KHÔNG CẦN GPS
+    if (staffName) {
+      await performSubmit();
+      return;
     }
+
+    // NẾU LÀ KHÁCH HÀNG -> BẮT BUỘC LẤY VỊ TRÍ
+    if (!navigator.geolocation) {
+      alert(
+        "Trình duyệt của bạn không hỗ trợ định vị. Vui lòng liên hệ nhân viên!",
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        await performSubmit(latitude, longitude);
+      },
+      (error) => {
+        setIsSubmitting(false);
+        if (error.code === error.PERMISSION_DENIED) {
+          alert(
+            " Bạn đã chặn quyền truy cập vị trí!\nVui lòng bấm vào biểu tượng ổ khóa 🔒 trên thanh địa chỉ -> Bật 'Location' (Vị trí) lên để đặt món.",
+          );
+        } else {
+          alert(
+            "Không thể lấy vị trí. Vui lòng bật GPS trên điện thoại và thử lại.",
+          );
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
   };
 
   /**
