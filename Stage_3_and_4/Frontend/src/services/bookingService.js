@@ -38,7 +38,10 @@ export const createBooking = async (bookingData) => {
   const url = `${API_BASE_URL}${API_ENDPOINTS.BOOKING_CREATE}`;
   const response = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true" 
+    },
     body: JSON.stringify(bookingData)
   });
   return response.json();
@@ -57,6 +60,7 @@ export const fetchBookings = async () => {
     return [...localBookings, ...MOCK_BOOKINGS];
   }
   // URL giả định cho backend
-  const response = await fetch(`${API_BASE_URL}/api/bookings/`);
-  return response.json();
+  const response = await fetch(`${API_BASE_URL}/api/bookings/`, {
+    headers: { "ngrok-skip-browser-warning": "true" }
+  });
 };

@@ -17,7 +17,7 @@ export const fetchMenuData = async () => {
 
   // GỌI API GỐC /api/items/ ĐỂ ĐỒNG BỘ DỮ LIỆU VỚI ADMIN
   const url = `${API_BASE_URL}${API_ENDPOINTS.ITEMS}`;
-  
+
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -26,7 +26,7 @@ export const fetchMenuData = async () => {
         "ngrok-skip-browser-warning": "true",
       },
     });
-    
+
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
     const rawData = await response.json();
@@ -45,6 +45,7 @@ export const fetchMenuData = async () => {
         ...p,
         category: p.category_name || p.category || "Khác",
         img: imageUrl,
+        image: imageUrl,
       };
     });
 
@@ -65,7 +66,8 @@ export const fetchMenuData = async () => {
  * @returns {Promise<Array>} - Mảng danh sách các món ăn.
  */
 export const fetchItems = async () => {
-  const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
+  const token =
+    localStorage.getItem("token") || localStorage.getItem("accessToken");
   const url = `${API_BASE_URL}${API_ENDPOINTS.ITEMS}`;
   try {
     const response = await fetch(url, {
@@ -77,7 +79,38 @@ export const fetchItems = async () => {
     });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
-    return Array.isArray(data) ? data : data.results || [];
+    const items = Array.isArray(data) ? data : data.results || [];
+
+    // Chuẩn hóa dữ liệu ảnh cho Admin
+    return items.map((p) => {
+      let imageUrl = p.img || p.image || "";
+
+      // Logic chuẩn hóa ảnh (Inline để đảm bảo consistency)
+      if (imageUrl) {
+        // 1. Nếu là localhost -> lấy pathname
+        if (imageUrl.includes("localhost") || imageUrl.includes("127.0.0.1")) {
+          try {
+            const urlObj = new URL(imageUrl);
+            imageUrl = urlObj.pathname;
+          } catch (e) {}
+        }
+        // 2. Nếu là path tương đối -> nối API_BASE_URL
+        if (imageUrl.startsWith("/")) {
+          imageUrl = `${API_BASE_URL}${imageUrl}`;
+        } else if (
+          !imageUrl.startsWith("http") &&
+          !imageUrl.startsWith("data:")
+        ) {
+          imageUrl = `${API_BASE_URL}/${imageUrl}`;
+        }
+      }
+
+      return {
+        ...p,
+        img: imageUrl,
+        image: imageUrl,
+      };
+    });
   } catch (error) {
     console.error("Error fetching items:", error);
     return [];
@@ -95,20 +128,21 @@ export const saveProduct = async (product) => {
     return { success: true, data: product };
   }
 
-  const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
+  const token =
+    localStorage.getItem("token") || localStorage.getItem("accessToken");
   const isEdit = product.isEdit && product.id;
 
   const baseUrl = `${API_BASE_URL}${API_ENDPOINTS.ITEMS}`;
   const url = isEdit ? `${baseUrl}${product.id}/` : baseUrl;
 
   const method = isEdit ? "PATCH" : "POST";
-  
+
   // Format payload theo đúng yêu cầu của Backend Django
   const payload = {
     name: product.name,
     price: parseInt(product.price),
     category: product.group || product.category,
-    image: product.image || product.img, 
+    image: product.image || product.img,
   };
 
   try {
@@ -145,7 +179,8 @@ export const deleteProduct = async (id) => {
     await delay(300);
     return true;
   }
-  const token = localStorage.getItem("token") || localStorage.getItem("accessToken");
+  const token =
+    localStorage.getItem("token") || localStorage.getItem("accessToken");
   const url = `${API_BASE_URL}${API_ENDPOINTS.ITEMS}${id}/`;
   try {
     const response = await fetch(url, {
@@ -161,4 +196,68 @@ export const deleteProduct = async (id) => {
     console.error("Error deleting product:", error);
     throw error;
   }
+};
+
+/**
+ * Lấy danh sách tất cả các nhóm món (Categories)
+ */
+export const fetchCategories = async () => {
+  if (USE_MOCK_DATA) {
+    // Trả về danh sách giả định nếu dùng Mock
+    return [
+      { id: 1, name: "Sushi" },
+      { id: 2, name: "Sashimi" },
+    ];
+  }
+
+  const url = `${API_BASE_URL}${API_ENDPOINTS.CATEGORIES}`;
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "ngrok-skip-browser-warning": "true",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const data = await response.json();
+    // API có thể trả về mảng trực tiếp hoặc object phân trang (results)
+    return Array.isArray(data) ? data : data.results || [];
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return [];
+  }
+};
+
+/**
+ * Tạo một nhóm món mới
+ * @param {string} name - Tên nhóm món
+ */
+export const createCategory = async (name) => {
+  if (USE_MOCK_DATA) {
+    return { id: Date.now(), name };
+  }
+
+  const token =
+    localStorage.getItem("token") || localStorage.getItem("accessToken");
+  const url = `${API_BASE_URL}${API_ENDPOINTS.CATEGORIES}`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      "ngrok-skip-browser-warning": "true",
+    },
+    body: JSON.stringify({ name }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || "Không thể tạo nhóm món mới");
+  }
+
+  return await response.json();
 };

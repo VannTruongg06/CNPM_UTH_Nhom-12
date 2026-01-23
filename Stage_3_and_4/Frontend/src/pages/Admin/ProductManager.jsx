@@ -4,6 +4,8 @@ import {
   fetchItems,
   saveProduct,
   deleteProduct,
+  fetchCategories,
+  createCategory,
 } from "../../services/menuService";
 import ProductTable from "../../Components/Admin/Product/ProductTable";
 import ProductForm from "../../Components/Admin/Product/ProductForm";
@@ -31,23 +33,45 @@ const ProductManager = () => {
   });
 
   /**
-   * Tải danh sách món ăn từ API và cập nhật state.
+   * Tải danh sách món ăn và danh sách nhóm món từ API
    */
   const loadData = async () => {
     try {
       setLoading(true);
-      const data = await fetchItems();
+      // Gọi song song cả 2 API để tối ưu thời gian
+      const [productsData, categoriesData] = await Promise.all([
+        fetchItems(),
+        fetchCategories(),
+      ]);
 
-      if (Array.isArray(data)) {
-        setProducts(data);
-        // Trích xuất danh sách các nhóm món ăn duy nhất hiện có
-        const uniqueGroups = [
-          ...new Set(data.map((p) => p.category_name || p.category)),
-        ].filter(Boolean);
-        setCategories(uniqueGroups);
+      let loadedProducts = [];
+      if (Array.isArray(productsData)) {
+        loadedProducts = productsData;
+        setProducts(productsData);
       }
+
+      // 1. Lấy category từ API danh mục riêng
+      let apiCategories = [];
+      if (Array.isArray(categoriesData)) {
+        apiCategories = categoriesData.map(c => c.name || c);
+      }
+
+      // 2. Lấy category từ danh sách sản phẩm hiện có (để đảm bảo không bị mất nhóm cũ nếu API rỗng)
+      let productCategories = [];
+      if (loadedProducts.length > 0) {
+        productCategories = loadedProducts.map(p => p.category_name || p.category).filter(Boolean);
+      }
+
+      // 3. Gộp lại và loại bỏ trùng lặp
+      const uniqueGroups = [...new Set([...apiCategories, ...productCategories])];
+      
+      // Sắp xếp A-Z nếu cần, hoặc giữ nguyên thứ tự
+      // uniqueGroups.sort((a, b) => a.localeCompare(b));
+
+      setCategories(uniqueGroups);
+
     } catch (error) {
-      console.error("Lỗi tải hàng hóa:", error);
+      console.error("Lỗi tải dữ liệu:", error);
     } finally {
       setLoading(false);
     }
@@ -64,22 +88,45 @@ const ProductManager = () => {
   const handleSave = async (dataToSave) => {
     const cleanPrice = dataToSave.price ? parseInt(dataToSave.price) : 0;
 
-    // Ràng buộc giá trị tối đa để phù hợp với kiểu dữ liệu của Database
+    // Ràng buộc giá trị tối đa
     if (cleanPrice > 2000000000) {
       alert("Giá quá lớn! Vui lòng nhập giá nhỏ hơn 2 tỷ VNĐ.");
       return;
     }
 
-    const productPayload = {
-      id: dataToSave.isEdit ? dataToSave.id : null,
-      name: dataToSave.name,
-      category: dataToSave.group,
-      price: isNaN(cleanPrice) ? 0 : cleanPrice,
-      img: dataToSave.image,
-      isEdit: dataToSave.isEdit,
-    };
+    let finalCategory = dataToSave.group;
 
     try {
+      // Logic xử lý nếu là nhóm mới: Gọi API tạo category trước
+      // Kiểm tra xem nhóm này đã có trong danh sách categories chưa
+      // Lưu ý: dataToSave.group ở đây là chuỗi tên nhóm do ProductForm gửi lên
+      
+      const isNewCategory = !categories.includes(dataToSave.group) && dataToSave.group !== "";
+      
+      // Nếu logic UI của ProductForm khi chọn "ADD_NEW" cho phép nhập text tùy ý
+      // thì ta cần kiểm tra nếu text đó chưa có trong list thì gọi API tạo mới.
+      if (isNewCategory) {
+          try {
+             // Gọi API tạo nhóm mới
+             await createCategory(dataToSave.group);
+             // Cập nhật lại list categories cục bộ để lần sau không tạo lại
+             setCategories(prev => [...prev, dataToSave.group]);
+          } catch (catError) {
+             console.error("Lỗi tạo nhóm món mới:", catError);
+             alert("Không thể tạo nhóm món mới. Vui lòng thử lại.");
+             return; 
+          }
+      }
+
+      const productPayload = {
+        id: dataToSave.isEdit ? dataToSave.id : null,
+        name: dataToSave.name,
+        category: finalCategory, // Gửi tên category (Backend sẽ tự map hoặc check lại)
+        price: isNaN(cleanPrice) ? 0 : cleanPrice,
+        img: dataToSave.image,
+        isEdit: dataToSave.isEdit,
+      };
+
       await saveProduct(productPayload);
       alert(
         dataToSave.isEdit
