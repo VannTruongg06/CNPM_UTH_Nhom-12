@@ -9,10 +9,7 @@ import {
   cancelOrder,
 } from "../../services/orderService";
 import { fetchTables } from "../../services/tableService";
-import {
-  MOCK_PRODUCTS,
-  MOCK_CATEGORIES as CATEGORIES,
-} from "../../mockData.js";
+import { MOCK_PRODUCTS, MOCK_CATEGORIES } from "../../mockData.js";
 
 import BillSection from "../../Components/Admin/POS/BillSection";
 import TableGrid from "../../Components/Admin/POS/TableGrid";
@@ -28,7 +25,7 @@ const POS = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const role = localStorage.getItem("role"); // Quyền của người dùng (ADMIN/STAFF)
   const [activeTab, setActiveTab] = useState("table"); // Tab hiện tại (table/menu/payment)
-  
+
   // Dữ liệu Menu
   const [products, setProducts] = useState(MOCK_PRODUCTS || []);
   const [categories, setCategories] = useState(MOCK_CATEGORIES || ["Tất cả"]);
@@ -317,7 +314,7 @@ const POS = () => {
 
       await checkoutTable(selectedTable, methodMap[paymentMethod] || "cash");
 
-      window.print(); // Gọi lệnh in của trình duyệt
+      window.print(); // TODO: Mở comment dòng này khi chạy thực tế để in hóa đơn
       setCart([]);
       setOrderedItems([]);
       setDiscount(0);

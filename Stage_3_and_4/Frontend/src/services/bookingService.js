@@ -12,7 +12,7 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
  */
 export const createBooking = async (bookingData) => {
   if (USE_MOCK_DATA) {
-    console.log("Mock Create Booking:", bookingData);
+
     await delay(800);
     
     // Lưu vào danh sách đặt bàn ảo trong localStorage

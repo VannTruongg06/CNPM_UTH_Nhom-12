@@ -27,6 +27,8 @@ export const MOCK_PRODUCTS = [
   { id: 17, name: "Nước Ép Cam", price: 45000, category: "Đồ uống", img: "https://images.unsplash.com/photo-1613478223719-2ab802602423?w=400" },
 ];
 
+export const MOCK_CATEGORIES = ["Tất cả", "Khai vị", "Sushi", "Sashimi", "Mì & Cơm", "Đồ uống"];
+
 export const MOCK_TABLES = [
   { id: 1, name: "Bàn 1", status: "available" },
   { id: 2, name: "Bàn 2", status: "occupied" },

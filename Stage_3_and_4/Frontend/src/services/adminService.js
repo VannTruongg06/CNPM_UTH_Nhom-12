@@ -12,7 +12,7 @@ export const getDashboardStats = async (timeRange = 'today') => {
   const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   const url = `${cleanBaseUrl}?range=${timeRange}`;
 
-  console.log(`Fetching Dashboard Stats: ${url}`);
+
 
   const token = localStorage.getItem('token') || localStorage.getItem('accessToken');
 
@@ -63,7 +63,7 @@ export const deleteBooking = async (id) => {
   try {
     // Sử dụng endpoint cấu trúc /api/booking/delete/{id}/
     const url = `${API_BASE_URL}${API_ENDPOINTS.BOOKING_DELETE(id)}`;
-    console.log(`Deleting booking at: ${url}`);
+
 
     const response = await fetch(url, {
       method: "DELETE",

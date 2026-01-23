@@ -9,16 +9,18 @@ import ProductTable from "../../Components/Admin/Product/ProductTable";
 import ProductForm from "../../Components/Admin/Product/ProductForm";
 
 /**
- * Trang Quản lý hàng hóa (Món ăn).
- * Chức năng: Xem danh sách, Thêm mới, Chỉnh sửa thông tin và Xóa món ăn.
+ * Trang Quản lý hàng hóa (Món ăn) dành cho Admin.
+ * Cho phép xem danh sách, thêm mới, sửa và xóa các món ăn trong thực đơn.
  */
 const ProductManager = () => {
-  const [isFormOpen, setIsFormOpen] = useState(false); // Trạng thái hiển thị Form (Thêm/Sửa) vs Table (Danh sách)
+  // Trạng thái hiển thị (Danh sách món ăn hoặc Form nhập liệu)
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Dữ liệu tạm thời khi đang nhập liệu trên Form
+  // Lưu trữ dữ liệu tạm thời khi người dùng nhập trên Form
   const [formData, setFormData] = useState({
     id: "",
     name: "",
@@ -29,7 +31,7 @@ const ProductManager = () => {
   });
 
   /**
-   * Tải danh sách hàng hóa và trích xuất danh mục.
+   * Tải danh sách món ăn từ API và cập nhật state.
    */
   const loadData = async () => {
     try {
@@ -38,7 +40,7 @@ const ProductManager = () => {
 
       if (Array.isArray(data)) {
         setProducts(data);
-        // Lấy danh sách các danh mục duy nhất từ sản phẩm
+        // Trích xuất danh sách các nhóm món ăn duy nhất hiện có
         const uniqueGroups = [
           ...new Set(data.map((p) => p.category_name || p.category)),
         ].filter(Boolean);
@@ -51,17 +53,18 @@ const ProductManager = () => {
     }
   };
 
+  // Tải dữ liệu lần đầu khi vào trang
   useEffect(() => {
     loadData();
   }, []);
 
   /**
-   * Xử lý lưu thông tin sản phẩm (Thêm mới hoặc Cập nhật).
+   * Xử lý lưu thông tin sản phẩm từ Form xuống Backend.
    */
   const handleSave = async (dataToSave) => {
     const cleanPrice = dataToSave.price ? parseInt(dataToSave.price) : 0;
 
-    // Chặn nhập giá trị quá lớn gây lỗi backend (kiểu Integer của DB)
+    // Ràng buộc giá trị tối đa để phù hợp với kiểu dữ liệu của Database
     if (cleanPrice > 2000000000) {
       alert("Giá quá lớn! Vui lòng nhập giá nhỏ hơn 2 tỷ VNĐ.");
       return;
@@ -84,14 +87,14 @@ const ProductManager = () => {
           : "Thêm hàng hóa mới thành công!",
       );
       setIsFormOpen(false);
-      loadData();
+      loadData(); // Tải lại danh sách sau khi lưu
     } catch (error) {
       alert("Lỗi khi lưu hàng hóa: " + error.message);
     }
   };
 
   /**
-   * Chuẩn bị dữ liệu để chỉnh sửa một món ăn.
+   * Chuẩn bị dữ liệu và mở Form để chỉnh sửa một món ăn.
    */
   const handleEdit = (item) => {
     setFormData({
@@ -106,12 +109,13 @@ const ProductManager = () => {
   };
 
   /**
-   * Xử lý xóa sản phẩm.
+   * Thực hiện xóa món ăn sau khi người dùng xác nhận.
    */
   const handleDelete = async (id) => {
     if (window.confirm("Xóa món này?")) {
       try {
         await deleteProduct(id);
+        // Cập nhật giao diện ngay lập tức mà không cần tải lại toàn bộ
         setProducts(products.filter((p) => p.id !== id));
         alert("Đã xóa thành công!");
       } catch (error) {
@@ -121,7 +125,7 @@ const ProductManager = () => {
   };
 
   /**
-   * Chuẩn bị form trống để thêm món ăn mới.
+   * Mở Form trống để thêm món ăn mới.
    */
   const handleAddNew = () => {
     setFormData({

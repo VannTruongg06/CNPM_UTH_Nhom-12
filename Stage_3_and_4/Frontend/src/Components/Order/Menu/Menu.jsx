@@ -30,12 +30,12 @@ const Menu = ({ onBack, cart, updateCart, notes, updateNotes }) => {
         setError(null);
         const data = await fetchMenuData();
 
-        console.log("Menu data received:", data);
+
 
         // Xử lý dữ liệu sản phẩm
         if (data.products && Array.isArray(data.products)) {
           setProducts(data.products);
-          console.log("Products set:", data.products.length, "items");
+
         } else {
           console.warn("No products in response or products is not an array");
         }
@@ -43,17 +43,14 @@ const Menu = ({ onBack, cart, updateCart, notes, updateNotes }) => {
         // Xử lý dữ liệu danh mục
         if (data.categories && Array.isArray(data.categories)) {
           setCategories(["Tất cả", ...data.categories]);
-          console.log("Categories set:", ["Tất cả", ...data.categories]);
+
         } else if (data.products && Array.isArray(data.products)) {
           // Tự động tạo danh mục từ products nếu backend không trả về mảng categories riêng
           const uniqueCategories = [
             ...new Set(data.products.map((p) => p.category).filter(Boolean)),
           ];
           setCategories(["Tất cả", ...uniqueCategories]);
-          console.log("Categories auto-generated:", [
-            "Tất cả",
-            ...uniqueCategories,
-          ]);
+
         } else {
           console.warn("No categories found and cannot generate from products");
         }

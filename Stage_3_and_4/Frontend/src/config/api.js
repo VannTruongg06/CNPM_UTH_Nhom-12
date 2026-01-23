@@ -1,9 +1,9 @@
 ﻿// API Configuration
 export const API_BASE_URL =
-  "https://unretouched-overpopulously-maeve.ngrok-free.dev";
+  "https://dayana-overcomplacent-chubbily.ngrok-free.dev";
 
 export const API_ENDPOINTS = {
-  MENU: "/api/menu/data/",
+  MENU: "/api/menu/",
   TABLES: "/api/tables/",
   ITEMS: "/api/items/",
   ORDER: "/api/orders/create/",

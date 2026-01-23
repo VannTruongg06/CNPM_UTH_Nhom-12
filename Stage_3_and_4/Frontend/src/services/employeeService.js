@@ -32,7 +32,7 @@ export const getEmployees = async () => {
  */
 export const saveEmployee = async (employee) => {
   if (USE_MOCK_DATA) {
-    console.log("Mock Save Employee:", employee);
+
     await delay(500);
     return { success: true, data: employee };
   }
@@ -74,7 +74,7 @@ export const saveEmployee = async (employee) => {
  */
 export const deleteEmployee = async (id) => {
   if (USE_MOCK_DATA) {
-    console.log("Mock Delete Employee ID:", id);
+
     await delay(300);
     return true;
   }

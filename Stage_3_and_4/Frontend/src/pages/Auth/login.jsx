@@ -5,6 +5,7 @@ import logo from "../../assets/images/Logo.png";
 import logo2 from "../../assets/images/logo2.png";
 import VietNam from "../../assets/images/VietNam.png";
 import Japan from "../../assets/images/Japan.png";
+import { API_BASE_URL } from "../../config/api";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -23,19 +24,18 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch(
-        "https://unretouched-overpopulously-maeve.ngrok-free.dev/login/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: inputUser,
-            password: inputPass,
-          }),
-        }
-      );
+      // Sử dụng API_BASE_URL từ config
+      const response = await fetch(`${API_BASE_URL}/login/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true", // Thêm header này để tránh bị chặn
+        },
+        body: JSON.stringify({
+          username: inputUser,
+          password: inputPass,
+        }),
+      });
 
       const result = await response.json();
 
