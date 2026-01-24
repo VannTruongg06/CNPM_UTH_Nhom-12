@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Login.css";
+import "./login.css";
 import logo from "../../assets/images/Logo.png";
 import logo2 from "../../assets/images/logo2.png";
 import VietNam from "../../assets/images/VietNam.png";
@@ -25,7 +25,7 @@ const Login = () => {
 
     try {
       // Sử dụng API_BASE_URL từ config
-      const response = await fetch(`${API_BASE_URL}/login/`, {
+      const response = await fetch(`${API_BASE_URL}/api/login/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

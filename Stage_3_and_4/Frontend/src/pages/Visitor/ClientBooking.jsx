@@ -5,7 +5,7 @@ import logo from '../../assets/images/Uminoo-logo.png';
 import logo2 from '../../assets/images/logo2.png';
 import VietNam from '../../assets/images/VietNam.png';
 import Japan from '../../assets/images/Japan.png';
-import Facebook from '../../assets/images/FB-link.png';
+import Facebook from "../../assets/images/FB-Link.png";
 import { createBooking } from '../../services/bookingService';
 
 /**

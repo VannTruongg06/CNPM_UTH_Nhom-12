@@ -72,14 +72,16 @@ WSGI_APPLICATION = 'site1.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 # Cấu hình MySQL
+import os
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "emenu",
-        "USER": "root",
-        "PASSWORD": "",
-        "HOST": "127.0.0.1",
-        "PORT": "3306",
+        "NAME": os.environ.get("DB_NAME", "emenu"),
+        "USER": os.environ.get("DB_USER", "root"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", ""),
+        "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
+        "PORT": os.environ.get("DB_PORT", "3306"),
     }
 }
 
@@ -119,6 +121,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -138,7 +141,7 @@ CORS_ALLOWED_ORIGINS = [
 
 # Hoặc cho phép tất cả (chỉ dùng khi development)
 # Nếu muốn chỉ cho phép các origin cụ thể, set CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOW_ALL_ORIGINS = False  # Tạm thời bật để dễ test, có thể tắt và chỉ dùng CORS_ALLOWED_ORIGINS
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Cho phép credentials
 CORS_ALLOW_CREDENTIALS = True
@@ -167,12 +170,7 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'incommutable-antwan-nondemonstrably.ngrok-free.dev',  # Link ngrok của frontend
-    'kyson-wearish-myung.ngrok-free.dev', # Link ngrok của backend
-]
+ALLOWED_HOSTS = ['*']
 
 # CSRF Trusted Origins (cho phép CSRF từ các domain này)
 CSRF_TRUSTED_ORIGINS = [
