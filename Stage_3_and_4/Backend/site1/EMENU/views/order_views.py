@@ -53,9 +53,9 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 def create_order(request):
     try:
         # ==================================================================
-        # 🛡️ BƯỚC 1: BẢO MẬT VỊ TRÍ (GEOFENCING)
+        # 🛡️ BƯỚC 1: BẢO MẬT VỊ TRÍ (GEOFENCING) - TẠM TẮT ĐỂ TEST
         # ==================================================================
-        
+        """
         # Cấu hình tọa độ quán (Thay số thực tế của bạn vào đây)
         SHOP_LAT = 10.824682   
         SHOP_LON = 106.720029
@@ -82,7 +82,7 @@ def create_order(request):
 
         if dist > MAX_DISTANCE:
             return Response({'error': f'Bạn đang cách quán {int(dist)}m. Vui lòng lại gần quán để đặt!'}, status=403)
-
+        """
         # ==================================================================
         # 🛒 BƯỚC 2: XỬ LÝ ĐƠN HÀNG (Logic cộng dồn món)
         # ==================================================================

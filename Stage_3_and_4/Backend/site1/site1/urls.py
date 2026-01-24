@@ -24,7 +24,7 @@ urlpatterns = [
     path('', views.get_Emenu, name='home'),
     
     # 2. Auth
-    path('login/', views.login, name='login'),
+    path('api/login/', views.login, name='login'),
     path('api/auth/me/', views.get_current_user, name='get_current_user'),
     
     # 3. Dashboard
