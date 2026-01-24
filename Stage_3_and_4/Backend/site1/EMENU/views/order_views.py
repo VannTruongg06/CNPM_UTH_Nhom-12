@@ -57,8 +57,8 @@ def create_order(request):
         # ==================================================================
         
         # Cấu hình tọa độ quán (Thay số thực tế của bạn vào đây)
-        SHOP_LAT = 10.824682   
-        SHOP_LON = 106.720029
+        SHOP_LAT = 10.824225  
+        SHOP_LON = 106.719581
         MAX_DISTANCE = 150    # Cho phép sai số 150 mét
         
         # Lấy tọa độ khách gửi lên từ Frontend
@@ -68,9 +68,14 @@ def create_order(request):
         # Debug xem khách gửi gì lên (xem trong Terminal)
         print(f"📡 Khách đang ở: {user_lat}, {user_lon}")
 
+        # --- FIX CHO MÔI TRƯỜNG TEST KHÔNG CÓ HTTPS ---
+        # Nếu không lấy được vị trí (do trình duyệt chặn HTTP), 
+        # Tự động gán vị trí của khách = Vị trí của quán để cho qua.
         if not user_lat or not user_lon:
-            # Nếu khách dùng tool để order mà không gửi tọa độ -> CHẶN
-            return Response({'error': 'Yêu cầu bật Vị trí (GPS) trên thiết bị để đặt món!'}, status=400)
+            print("⚠️ Cảnh báo: Không nhận được GPS (có thể do lỗi HTTP). Sử dụng tọa độ quán để Bypass.")
+            user_lat = SHOP_LAT
+            user_lon = SHOP_LON
+        # ----------------------------------------------
 
         # Tính khoảng cách
         try:

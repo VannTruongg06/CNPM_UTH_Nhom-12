@@ -14,7 +14,7 @@ Bước 2: Khởi chạy hệ thống
 2.  Mở Terminal (PowerShell hoặc CMD) tại thư mục đó.
 3.  Chạy lệnh duy nhất sau để dựng toàn bộ Server, Database và Web:
 
-1 docker-compose up --build -d
+docker-compose up --build -d
 (Đợi khoảng 3-5 phút cho lần đầu tiên để nó tải và cài đặt mọi thứ).
 
 Bước 3: Nạp dữ liệu (Chỉ làm 1 lần đầu tiên)
