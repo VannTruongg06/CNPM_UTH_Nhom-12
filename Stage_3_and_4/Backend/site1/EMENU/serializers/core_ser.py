@@ -13,6 +13,8 @@ class FlexibleImageField(serializers.ImageField):
                 if response.status_code == 200:
                     parsed = urlparse(data)
                     file_name = os.path.basename(parsed.path) or f"{uuid.uuid4()}.jpg"
+                    if "." not in file_name:
+                         file_name += ".jpg"
                     data = ContentFile(response.content, name=file_name)
                 else: raise serializers.ValidationError(f"Lỗi link: {response.status_code}")
             except Exception as e: raise serializers.ValidationError(str(e))

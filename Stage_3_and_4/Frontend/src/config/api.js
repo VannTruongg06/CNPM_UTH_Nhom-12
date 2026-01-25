@@ -1,6 +1,6 @@
 ﻿// API Configuration
 const envUrl = import.meta.env.VITE_API_BASE_URL;
-export const API_BASE_URL = typeof envUrl === 'string' ? envUrl : "https://kyson-wearish-myung.ngrok-free.dev";
+export const API_BASE_URL = (typeof envUrl === 'string' && envUrl !== "") ? envUrl : "";
 
 export const API_ENDPOINTS = {
   MENU: "/api/menu/",
