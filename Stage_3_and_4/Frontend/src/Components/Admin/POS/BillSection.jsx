@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Component hiển thị danh sách hóa đơn tạm tính của bàn đang chọn.
@@ -15,9 +15,9 @@ const BillSection = ({
   handleCancelOrder, // Hàm xử lý hủy/xóa thực đơn
   activeTab,
   loading,
-  setSelectedTable,
-  setCart,
-  setActiveTab
+  // setSelectedTable,
+  // setCart,
+  // setActiveTab,
 }) => {
   return (
     <div className="pos-bill-section">
@@ -43,9 +43,7 @@ const BillSection = ({
             <div className="pos-item-qty">
               <span className="pos-qty-val">{item.qty}</span>
             </div>
-            <div className="pos-item-price">
-              {item.price.toLocaleString()}đ
-            </div>
+            <div className="pos-item-price">{item.price.toLocaleString()}đ</div>
             <div className="pos-item-total">
               {(item.price * item.qty).toLocaleString()}đ
             </div>
@@ -56,15 +54,28 @@ const BillSection = ({
               X
             </button>
             {notes[item.id] && (
-              <div className="pos-item-note" style={{ fontSize: "12px", color: "#666", gridColumn: "1 / -1", marginTop: "4px" }}>
-                📝
+              <div
+                className="pos-item-note"
+                style={{
+                  fontSize: "12px",
+                  color: "#666",
+                  gridColumn: "1 / -1",
+                  marginTop: "4px",
+                  fontStyle: "italic",
+                }}
+              >
+                📝 {notes[item.id]}
               </div>
             )}
           </div>
         ))}
         {/* List items ordered */}
         {orderedItems.map((item, idx) => (
-          <div key={"ord-" + idx} className="pos-item-block ordered">
+          <div
+            key={"ord-" + idx}
+            className="pos-item-block ordered"
+            style={{ flexWrap: "wrap" }}
+          >
             <div className="pos-item-main">
               <img
                 src={item.image || item.img || "https://via.placeholder.com/50"}
@@ -72,8 +83,7 @@ const BillSection = ({
                 className="pos-item-img"
               />
               <div className="pos-item-name">
-                {item.name}{" "}
-                <span className="pos-badge-ordered">Đã đặt</span>
+                {item.name} <span className="pos-badge-ordered">Đã đặt</span>
               </div>
             </div>
             <div className="pos-item-qty">
@@ -86,6 +96,21 @@ const BillSection = ({
               {((item.price || 0) * (item.quantity || 0)).toLocaleString()}đ
             </div>
             <div className="pos-item-status">✔</div>
+            {item.note && (
+              <div
+                className="pos-item-note"
+                style={{
+                  fontSize: "12px",
+                  color: "#303130",
+                  width: "100%",
+                  marginTop: "4px",
+                  fontStyle: "italic",
+                  paddingLeft: "40px",
+                }}
+              >
+                📝 {item.note}
+              </div>
+            )}
           </div>
         ))}
         {cart.length === 0 && orderedItems.length === 0 && (
@@ -106,10 +131,7 @@ const BillSection = ({
               Gửi Thực Đơn
             </button>
           ) : (
-            <button
-              className="pos-btn-clear"
-              onClick={handleCancelOrder}
-            >
+            <button className="pos-btn-clear" onClick={handleCancelOrder}>
               {orderedItems.length > 0 ? "Hủy Đơn" : "Xóa thực đơn"}
             </button>
           )}
