@@ -1,40 +1,43 @@
-HƯỚNG DẪN BÀN GIAO & CHẠY DỰ ÁN (DOCKER)
+# PROJECT HANDOVER & SETUP (DOCKER)
 
-3 Bước sau:
+Follow these 3 Steps:
 
-Bước 1: Cài đặt môi trường
-Yêu cầu máy người nhận phải có sẵn:
+### Step 1: Environment Setup
+The recipient's machine is required to have:
 
-1.  Docker Desktop (Đã cài và đang bật).
-2.  Git (Không bắt buộc nhưng nên có).
+1.  Docker Desktop (Installed and running).
+2.  Git (Optional but recommended).
 
-Bước 2: Khởi chạy hệ thống
+### Step 2: System Launch
 
-1.  Giải nén thư mục dự án.
-2.  Mở Terminal (PowerShell hoặc CMD) tại thư mục đó.
-3.  Chạy lệnh duy nhất sau để dựng toàn bộ Server, Database và Web:
+1.  Extract the project folder.
+2.  Open Terminal (PowerShell or CMD) in that folder.
+3.  Run the single command below to build the entire Server, Database, and Web:
 
-docker-compose up --build -d
-(Đợi khoảng 3-5 phút cho lần đầu tiên để nó tải và cài đặt mọi thứ).
+    docker-compose up --build -d
 
-Bước 3: Nạp dữ liệu (Chỉ làm 1 lần đầu tiên)
-Vì là máy mới nên Database sẽ trống trơn. Bảo họ chạy lần lượt 3 lệnh này trong Terminal để nạp Menu và tạo Admin:
+    (Wait about 3-5 minutes for the first run to download and install everything).
 
-1.  Tạo bảng & Bàn ăn:
-    1 docker-compose exec backend python manage.py migrate
-    2 docker-compose exec backend python create_tables.py
-2.  Nạp thực đơn món ăn:
-    1 docker-compose exec backend python import_menu.py
-3.  Tạo tài khoản Quản lý (Admin):
+### Step 3: Data Seeding (First run only)
+Since this is a new machine, the Database will be empty. Run these 3 commands sequentially in the Terminal to import the Menu and create an Admin:
 
-1 docker-compose exec backend python manage.py createsuperuser
-(Nhập Username/Password tùy ý).
+1.  Create Tables & Dining Tables:
+    1. docker-compose exec backend python manage.py migrate
+    2. docker-compose exec backend python create_tables.py
+
+2.  Import Food Menu:
+    docker-compose exec backend python import_menu.py
+
+3.  Create Admin Account (Manager):
+    docker-compose exec backend python manage.py createsuperuser
+
+    (Enter any Username/Password you prefer).
 
 ---
 
-CÁCH SỬ DỤNG
-Sau khi xong Bước 3, họ có thể truy cập ngay:
+### HOW TO USE
+After completing Step 3, you can access the system immediately:
 
-- Trang Khách: http://localhost.
-- Trang Login (Admin): http://localhost/login. -> đăng nhập tài khoản admin đã tạo
-- Trang Staff: sau khi tạo tài khoản Staff trong Admin -> về trang login http://localhost/login đăng nhập tài khoản staff đã tạo
+- Guest Page: http://localhost (online reservation page).
+- Login Page (Admin): http://localhost/login -> log in with the created admin account.
+- Staff Page: after creating a Staff account inside Admin -> return to login page http://localhost/login and log in with the created staff account.
