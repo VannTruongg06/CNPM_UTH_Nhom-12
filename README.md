@@ -70,15 +70,14 @@
 ![Level 2](./Stage_1_and_2/DFD-level-2.2.png)
 ![Level 2](./Stage_1_and_2/DFD-level-2.3.png)
 ![Level 2](./Stage_1_and_2/DFD-level-2.4.png)
+
 ### Use Case Diagram
-*(Overview of user interactions)*
 ![Use Case Diagram](./Stage_1_and_2/use-case.png)
 
 ### CLASS DIAGRAM
 ![CLASS DIAGRAM](./Stage_1_and_2/CLASS-DIAGRAM.png)
 
 ### Database Schema (ERD)
-*(Entity Relationship Diagram)*
 ![Database Schema](./Stage_1_and_2/ERD.png)
 
 ---
@@ -124,3 +123,4 @@
 
 ## 📝 License
 This project is developed for the **Software Engineering** course at **Ho Chi Minh City University of Transport (UTH)**.
+
