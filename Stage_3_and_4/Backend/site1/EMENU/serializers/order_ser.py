@@ -17,8 +17,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
     def get_img(self, obj):
         try:
             if obj.image:
-                # Chỉ trả về '/media/menu/anh.jpg'
-                # KHÔNG trả về http://localhost... hay http://ngrok...
+                # trả về '/media/menu/anh.jpg'
                 return obj.image.url 
         except: pass
         return ""
@@ -30,14 +29,14 @@ class OrderSerializer(serializers.ModelSerializer):
     total = serializers.IntegerField(read_only=True)
     status = serializers.CharField(read_only=True)
     
-    # 🔥 THAY ĐỔI: Dùng SerializerMethodField để tự xử lý logic gộp món
+    #  Dùng SerializerMethodField để tự xử lý gộp món
     items = serializers.SerializerMethodField()
 
     class Meta: 
         model = Order
         fields = ['id', 'tableId', 'tableNumber', 'total', 'status', 'createdAt', 'items']
 
-    # 👇 HÀM MỚI: Tự động cộng dồn các món giống nhau
+    # Tự động cộng dồn các món giống nhau
     def get_items(self, obj):
         all_items = obj.items.all()
         grouped = {} # Dictionary để gom nhóm: { product_id: {data...} }
@@ -84,9 +83,11 @@ class TableSerializer(serializers.ModelSerializer):
     current_order_total = serializers.SerializerMethodField()
     duration = serializers.SerializerMethodField()
     class Meta: model = Table; fields = '__all__'
+    #tạm tính tiền
     def get_current_order_total(self, obj):
         order = Order.objects.filter(table=obj, status='pending').last()
         return order.total if order else 0
+    #tính thời gian
     def get_duration(self, obj):
         order = Order.objects.filter(table=obj, status='pending').last()
         if order:

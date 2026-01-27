@@ -24,12 +24,13 @@ def get_notifications(request):
 @api_view(['GET'])
 def get_dashboard_stats(request):
     try:
+        #filter theo thời gian
         range_type = request.query_params.get('range', 'today'); today = timezone.now().date()
         filter_kwargs = {'paid_at__date': today}
         if range_type == 'yesterday': filter_kwargs = {'paid_at__date': today - timedelta(days=1)}
         elif range_type == 'month': filter_kwargs = {'paid_at__date__gte': today.replace(day=1)}
         elif range_type == 'year': filter_kwargs = {'paid_at__date__gte': today.replace(month=1, day=1)}
-
+        #bestseller
         revenues = Revenue.objects.filter(**filter_kwargs)
         total_rev = revenues.aggregate(t=Coalesce(Sum('amount'), 0))['t']
         cash_rev = revenues.filter(method='cash').aggregate(t=Coalesce(Sum('amount'), 0))['t']
@@ -47,21 +48,20 @@ def get_dashboard_stats(request):
                 else: img = "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=200"
                 best_sellers.append({'id': i.id, 'name': i.name, 'price': i.price, 'img': img, 'sold_count': t['total']})
             except: continue
-
+        #booking
         bookings = Booking.objects.filter(status='pending').order_by('-created_at')[:10]
         bookings_data = []
         
         for b in bookings:
             # 1. Format ngày giờ thành dd/mm/yyyy HH:MM
-            # Lưu ý: Cần import method strftime nếu chưa có (thực ra nó thuộc về datetime object có sẵn)
             fmt_time = b.booking_time.strftime("%d/%m/%Y %H:%M") if b.booking_time else ""
             
             bookings_data.append({
                 "id": b.id,
                 "customer_name": b.customer_name,
-                "name": b.customer_name,  # <--- THÊM DÒNG NÀY: Để Frontend hiển thị được cột "Tên khách"
+                "name": b.customer_name,  
                 "phone": b.customer_phone,
-                "time": fmt_time,         # <--- SỬA DÒNG NÀY: Trả về ngày giờ đã format dễ đọc
+                "time": fmt_time,         
                 "guests": b.guest_count,
                 "status": b.status
             })
@@ -70,7 +70,7 @@ def get_dashboard_stats(request):
         return Response({
             "revenue": {"total": total_rev, "cash": cash_rev, "transfer": transfer_rev, "orders": revenues.count()},
             "best_sellers": best_sellers, 
-            "bookings": bookings_data # Trả về data mới đã sửa
+            "bookings": bookings_data 
         })
         
     except Exception as e:

@@ -4,7 +4,13 @@ from ..models import Category, Item
 import base64, uuid, os, requests
 from django.core.files.base import ContentFile
 from urllib.parse import urlparse
-
+"""
+    CUSTOM FIELD XỬ LÝ ẢNH ĐA NĂNG:
+    Cho phép Frontend gửi ảnh dưới 3 dạng:
+    1. URL (http...): Server tự request tải về.
+    2. Base64 (data:image...): Server tự decode lưu thành file.
+    3. File Binary: Upload thông thường.
+    """
 class FlexibleImageField(serializers.ImageField):
     def to_internal_value(self, data):
         if isinstance(data, str) and data.startswith('http'):
@@ -48,14 +54,13 @@ class ItemSerializer(serializers.ModelSerializer):
         model = Item
         fields = ['id', 'name', 'price', 'category_name', 'img', 'category']
 
+    #lấy tên thay vì id
     def get_category_name(self, obj):
         return obj.category.name if obj.category else "Khác"
-
+    #trả đường dẫn
     def get_img(self, obj):
         try:
             if obj.image:
-                # Chỉ trả về '/media/menu/anh.jpg'
-                # KHÔNG trả về http://localhost... hay http://ngrok...
                 return obj.image.url 
         except: pass
         return ""
@@ -63,6 +68,7 @@ class ProductFormSerializer(serializers.ModelSerializer):
     category = serializers.CharField()
     image = FlexibleImageField(required=False, allow_null=True)
     class Meta: model = Item; fields = ['id', 'name', 'price', 'category', 'image']
+    #gửi id or tên danh mục tự tìm id
     def validate_category(self, value):
         if str(value).isdigit():
             try: return Category.objects.get(id=int(value))

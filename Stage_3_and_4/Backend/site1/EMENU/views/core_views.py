@@ -18,8 +18,10 @@ def get_Emenu(request): return render(request, 'Emenu.html')
 def login(request):
     serializer = LoginSerializer(data=request.data)
     if serializer.is_valid():
+    #validate
         user = authenticate(username=serializer.validated_data['username'], password=serializer.validated_data['password'])
         if user:
+    #trả token + role
             refresh = RefreshToken.for_user(user)
             role = 'ADMIN' if user.is_superuser else ('STAFF' if user.is_staff else 'CUSTOMER')
             name = user.first_name or user.username
@@ -29,6 +31,7 @@ def login(request):
 
 @api_view(['GET'])
 def get_current_user(request):
+#lấy tt user dựa trên token
     u = request.user
     if u.is_authenticated:
         role = 'ADMIN' if u.is_superuser else ('STAFF' if u.is_staff else 'CUSTOMER')
@@ -36,7 +39,7 @@ def get_current_user(request):
     return Response({'message': 'Chưa đăng nhập'}, 401)
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all().order_by('id') # Sắp xếp để không bị lộn xộn
+    queryset = Category.objects.all().order_by('id') 
     serializer_class = CategorySerializer
     
     # 1. Phân quyền: Khách chỉ được xem, Admin mới được Thêm/Sửa/Xóa
@@ -68,6 +71,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Item.objects.all().order_by('-id')
     def get_permissions(self): return [AllowAny()] if self.action in ['list', 'retrieve'] else [IsAdminUser()]
+    # get_serializer_class:
+    # + Nếu là xem (GET) -> Dùng ItemSerializer (hiển thị đẹp).
+    # + Nếu là thêm/sửa (POST/PUT) -> Dùng ProductFormSerializer (validate dữ liệu input).
     def get_serializer_class(self): return ProductFormSerializer if self.action in ['create', 'update', 'partial_update'] else ItemSerializer
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -97,8 +103,10 @@ def get_menu_data(request):
 class EmployeeViewSet(viewsets.ViewSet):
     permission_classes = [IsAdminUser]
     def list(self, request):
+    # lấy danh sách - admin
         users = User.objects.filter(is_staff=True).exclude(username='admin').order_by('id')
         return Response([{"id": u.id, "name": u.first_name or u.username, "user": u.username, "role": "admin" if u.is_superuser else "staff"} for u in users])
+    #tạo
     def create(self, request):
         try:
             d = request.data
@@ -108,6 +116,7 @@ class EmployeeViewSet(viewsets.ViewSet):
             u.is_superuser = (d.get('role') == 'admin'); u.save()
             return Response({'message': 'OK', 'id': u.id}, 201)
         except Exception as e: return Response({'error': str(e)}, 500)
+    #update
     def update(self, request, pk=None):
         try:
             u = User.objects.get(pk=pk); d = request.data
@@ -119,6 +128,7 @@ class EmployeeViewSet(viewsets.ViewSet):
             if d.get('role'): u.is_superuser = (d.get('role') == 'admin')
             u.save(); return Response({'message': 'OK'})
         except: return Response({'error': 'Lỗi'}, 500)
+    #xóa
     def destroy(self, request, pk=None):
         try:
             u = User.objects.get(pk=pk)

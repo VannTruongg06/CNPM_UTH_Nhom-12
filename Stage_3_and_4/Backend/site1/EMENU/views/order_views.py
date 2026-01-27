@@ -15,24 +15,11 @@ class TableViewSet(viewsets.ModelViewSet):
 
 @api_view(['GET'])
 def get_order_by_table(request, table_id):
+# lấy đơn 'pending'
     try:
         order = Order.objects.filter(table=table_id).exclude(status__in=['paid', 'cancelled']).last()
         return Response(OrderSerializer(order, context={'request': request}).data) if order else Response(None, 200)
     except Exception as e: return Response({'error': str(e)}, 500)
-
-# --- HÀM PHỤ: TÍNH KHOẢNG CÁCH (Haversine) ---
-def calculate_distance(lat1, lon1, lat2, lon2):
-    R = 6371000 # Bán kính trái đất (mét)
-    phi1 = math.radians(lat1)
-    phi2 = math.radians(lat2)
-    delta_phi = math.radians(lat2 - lat1)
-    delta_lambda = math.radians(lon2 - lon1)
-
-    a = math.sin(delta_phi / 2.0) ** 2 + \
-        math.cos(phi1) * math.cos(phi2) * \
-        math.sin(delta_lambda / 2.0) ** 2
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-    return R * c
 
 # --- HÀM PHỤ: TÍNH KHOẢNG CÁCH (Haversine) ---
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -53,12 +40,12 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 def create_order(request):
     try:
         # ==================================================================
-        # 🛡️ BƯỚC 1: BẢO MẬT VỊ TRÍ (GEOFENCING) - TẠM TẮT ĐỂ TEST
+        # 🛡️ BƯỚC 1: BẢO MẬT VỊ TRÍ (GEOFENCING) 
         # ==================================================================
         
         # Cấu hình tọa độ quán (Thay số thực tế của bạn vào đây)
-        SHOP_LAT = 10.824225  
-        SHOP_LON = 106.719581
+        SHOP_LAT = 10.824225  #vĩ độ
+        SHOP_LON = 106.719581 #kinh độ
         MAX_DISTANCE = 150    # Cho phép sai số 150 mét
         
         # Lấy tọa độ khách gửi lên từ Frontend
@@ -67,15 +54,11 @@ def create_order(request):
 
         # Debug xem khách gửi gì lên (xem trong Terminal)
         print(f"📡 Khách đang ở: {user_lat}, {user_lon}")
-
-        # --- FIX CHO MÔI TRƯỜNG TEST KHÔNG CÓ HTTPS ---
         # Nếu không lấy được vị trí (do trình duyệt chặn HTTP), 
-        # Tự động gán vị trí của khách = Vị trí của quán để cho qua.
         if not user_lat or not user_lon:
             print("⚠️ Cảnh báo: Không nhận được GPS (có thể do lỗi HTTP). Sử dụng tọa độ quán để Bypass.")
             user_lat = SHOP_LAT
             user_lon = SHOP_LON
-        # ----------------------------------------------
 
         # Tính khoảng cách
         try:
@@ -89,7 +72,7 @@ def create_order(request):
             return Response({'error': f'Bạn đang cách quán {int(dist)}m. Vui lòng lại gần quán để đặt!'}, status=403)
         
         # ==================================================================
-        # 🛒 BƯỚC 2: XỬ LÝ ĐƠN HÀNG (Logic cộng dồn món)
+        # 🛒 BƯỚC 2: XỬ LÝ ĐƠN HÀNG 
         # ==================================================================
         
         data = request.data
@@ -124,11 +107,11 @@ def create_order(request):
             qty = int(i.get('quantity', 1))
             note = i.get('note', '')
 
-            # 4. Kiểm tra món này đã có trong đơn chưa (và chưa ra món)
+            # 4. Kiểm tra món này đã có trong đơn chưa 
             exist = OrderItem.objects.filter(order=order, item=item, is_served=False).first()
             
             if exist:
-                # 🔥 LOGIC QUAN TRỌNG: CỘNG DỒN SỐ LƯỢNG (+=)
+                #  CỘNG DỒN SỐ LƯỢNG (+=)
                 exist.quantity += qty 
                 
                 # Gộp ghi chú nếu có
@@ -156,23 +139,28 @@ def create_order(request):
 
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
+#tt
 def checkout(request, table_id):
     try:
+        #timd đơn hàng cuối
         table = get_object_or_404(Table, id=table_id)
         order = Order.objects.filter(table=table).exclude(status__in=['paid', 'cancelled', 'served']).last()
         if not order: order = Order.objects.filter(table=table).exclude(status='paid').last()
         if not order: return Response({'error': 'Không có đơn'}, 400)
-
+        #tạo bản ghi
         method = request.data.get('payment_method', 'cash')
         Revenue.objects.create(order=order, method=method, amount=order.total)
+        #đổi trạng thái
         order.status = 'paid'; order.save()
         table.status = 'available'; table.save()
+        #xóa tbao
         Notification.objects.filter(table=table).delete()
         return Response({'message': 'Thanh toán thành công'})
     except Exception as e: return Response({'error': str(e)}, 500)
 
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
+#xóa đơn
 def cancel_order(request):
     try:
         table_id = request.data.get('table_id')
@@ -184,6 +172,7 @@ def cancel_order(request):
     except Exception as e: return Response({'error': str(e)}, 500)
 
 @api_view(['POST'])
+#yc tt
 def request_payment(request):
     try:
         table = Table.objects.get(id=request.data.get('table_id'))

@@ -59,8 +59,6 @@ export const submitOrder = async (orderData, lat = null, lon = null) => {
     lon: lon
   };
 
-  console.log("🚀 [Frontend] Sending Order with GPS:", payload);
-
   const response = await fetch(url, {
     method: "POST",
     headers: {

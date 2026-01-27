@@ -14,6 +14,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
     class Meta: model = Notification; fields = ['id', 'type', 'tableName', 'status', 'created_at'] 
+    #lấy số bàn thay vì id
     def get_tableName(self, obj): return f" {obj.table.number}" if obj.table else "Không xác định"
     def get_status(self, obj): return "read" if obj.is_read else "unread"
     def get_type(self, obj): return "PAYMENT_REQUEST"
