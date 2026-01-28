@@ -48,7 +48,7 @@ function ClientOrder({ initialTableId, staffName, onBack }) {
           } else {
             setTableNumber(`Bàn ${targetId}`);
           }
-        } catch (e) {
+        } catch {
           setTableNumber(`Bàn ${targetId}`);
         }
       }
@@ -150,6 +150,7 @@ function ClientOrder({ initialTableId, staffName, onBack }) {
       </div>
       <CartFooter
         cart={cart}
+        orderedCart={orderedCart}
         notes={notes}
         products={products}
         tableId={tableId}

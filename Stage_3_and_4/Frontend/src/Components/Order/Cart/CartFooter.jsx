@@ -13,6 +13,7 @@ import {
  */
 const CartFooter = ({
   cart,
+  orderedCart,
   notes,
   products,
   tableId,
@@ -22,6 +23,7 @@ const CartFooter = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const hasItems = Object.keys(cart).length > 0;
+  const hasOrderedItems = orderedCart && Object.keys(orderedCart).length > 0;
 
   /**
    * Gửi danh sách các món đang chọn trong giỏ hàng xuống server.
@@ -101,6 +103,10 @@ const CartFooter = ({
    * Gửi thông báo yêu cầu thanh toán tới quản trị viên/thu ngân.
    */
   const handleRequestPayment = async () => {
+    if (!hasOrderedItems) {
+      alert("Bàn chưa có món đã gọi. Không thể yêu cầu thanh toán!");
+      return;
+    }
     if (!tableId) {
       alert("Không tìm thấy thông tin bàn. Vui lòng quét lại mã QR!");
       return;
@@ -128,6 +134,8 @@ const CartFooter = ({
         <button
           className="cartFooter__action-btn btn-request-payment"
           onClick={handleRequestPayment}
+          disabled={!hasOrderedItems}
+          style={{ opacity: hasOrderedItems ? 1 : 0.5 }}
         >
           Yêu cầu thanh toán
         </button>
